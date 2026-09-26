@@ -44,7 +44,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     if (!mounted) return;
     await Navigator.push(context, MaterialPageRoute(builder: (_) => const WaterMomentScreen()));
     if (result.specialMoment && mounted) {
-      await Navigator.push(context, MaterialPageRoute(builder: (_) => SpecialRewardMomentScreen(successes: result.successes)));
+      await Navigator.push(context, MaterialPageRoute(builder: (_) => SpecialRewardMomentScreen(successes: result.successes, animation: result.animation, animal: result.animal)));
     }
   }
   Widget _tile(BuildContext context, String title, String subtitle, IconData icon, Color color, VoidCallback onTap) => TweenAnimationBuilder<double>(tween: Tween(begin: 0.0, end: 1.0), duration: const Duration(milliseconds: 500), curve: Curves.easeOutCubic, builder: (context, value, child) => Opacity(opacity: value, child: Transform.translate(offset: Offset(0, 18 * (1 - value)), child: child)), child: Card(color: color, clipBehavior: Clip.antiAlias, child: InkWell(onTap: onTap, borderRadius: BorderRadius.circular(12), child: Stack(children: [Positioned(right: 8, top: 18, child: TweenAnimationBuilder<double>(tween: Tween(begin: 0.0, end: 1.0), duration: const Duration(seconds: 3), curve: Curves.easeInOut, builder: (context, v, _) => Transform.translate(offset: Offset(-4 * v, 4 * v), child: Icon(icon, size: 176, color: Colors.white.withValues(alpha: 0.42)))), Padding(padding: const EdgeInsets.all(16), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Icon(icon, size: 32, color: Theme.of(context).colorScheme.primary), const Spacer(), Text(title, style: Theme.of(context).textTheme.titleMedium), const SizedBox(height: 4), Text(subtitle)]))]))));
