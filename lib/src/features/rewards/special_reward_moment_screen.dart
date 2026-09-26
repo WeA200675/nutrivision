@@ -26,7 +26,7 @@ class _SpecialRewardMomentScreenState extends State<SpecialRewardMomentScreen>
   @override
   Widget build(BuildContext context) => Scaffold(
         backgroundColor: const Color(0xFFFFF4D8),
-        body: AnimatedBuilder(
+        body: SafeArea(child: AnimatedBuilder(
           animation: _controller,
           builder: (context, _) {
             final t = Curves.easeOutBack.transform(_controller.value);
@@ -37,10 +37,11 @@ class _SpecialRewardMomentScreenState extends State<SpecialRewardMomentScreen>
                 Transform.scale(
                   scale: .72 + .28 * t,
                   child: Container(
-                    width: 250, height: 250,
+                    width: MediaQuery.sizeOf(context).shortestSide * .62,
+                    height: MediaQuery.sizeOf(context).shortestSide * .62,
                     decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white.withValues(alpha: .88), boxShadow: const [BoxShadow(color: Color(0x446A4300), blurRadius: 24, spreadRadius: 4)]),
                     alignment: Alignment.center,
-                    child: Text(_animalEmoji(widget.animal), style: const TextStyle(fontSize: 180)),
+                    child: Text(_animalEmoji(widget.animal), style: TextStyle(fontSize: MediaQuery.sizeOf(context).shortestSide * .45)),
                   ),
                 ),
                 Positioned(
@@ -80,7 +81,7 @@ class _SpecialRewardMomentScreenState extends State<SpecialRewardMomentScreen>
               ],
             );
           },
-        ),
+        )),
       );
 }
 
