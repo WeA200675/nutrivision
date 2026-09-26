@@ -7,6 +7,10 @@ import '../nutrition/nutrition_catalog.dart';
 import '../nutrition/nutrition_search_screen.dart';
 import '../analysis/mobile_barcode_scanner.dart';
 import 'nutrition_calculator.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../rewards/nutri_world.dart';
+import '../rewards/reward_events.dart';
+import '../rewards/special_reward_moment_screen.dart';
 
 class DiaryScreen extends StatefulWidget {
   const DiaryScreen({super.key, required this.repository, required this.catalog});
@@ -134,6 +138,18 @@ class _DiaryScreenState extends State<DiaryScreen> {
   double _sum(double Function(Meal) value) =>
       _meals.fold(0, (sum, meal) => sum + value(meal));
 
+  Future<void> _recordMealSuccess() async {
+    final prefs = await SharedPreferences.getInstance();
+    final result = await RewardService(NutriWorldRepository(prefs)).record(RewardEvent.mealLogged);
+    if (result.specialMoment && mounted) {
+      await Navigator.push(context, MaterialPageRoute(builder: (_) => SpecialRewardMomentScreen(
+        successes: result.successes,
+        animation: result.animation,
+        animal: result.animal,
+      )));
+    }
+  }
+
   Future<bool> _confirmDelete(Meal meal) async {
     final result = await showDialog<bool>(
       context: context,
@@ -170,7 +186,7 @@ class _DiaryScreenState extends State<DiaryScreen> {
       if (!mounted) return;
       if (food == null) { ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Produkt nicht gefunden.'))); return; }
       final meal = await showDialog<Meal>(context: context, builder: (_) => _FoodPortionDialog(food: food));
-      if (meal != null && mounted) { setState(() => _meals.add(meal)); await widget.repository.save(_meals); }
+      if (meal != null && mounted) { setState(() => _meals.add(meal)); await widget.repository.save(_meals); await _recordMealSuccess(); }
     } catch (_) { if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Barcode konnte nicht verarbeitet werden.'))); }
   }
 
@@ -178,7 +194,7 @@ class _DiaryScreenState extends State<DiaryScreen> {
     final food = await Navigator.push<FoodItem>(context, MaterialPageRoute(builder: (_) => NutritionSearchScreen(catalog: widget.catalog)));
     if (food == null || !mounted) return;
     final meal = await showDialog<Meal>(context: context, builder: (_) => _FoodPortionDialog(food: food));
-    if (meal != null && mounted) { setState(() => _meals.add(meal)); await widget.repository.save(_meals); }
+    if (meal != null && mounted) { setState(() => _meals.add(meal)); await widget.repository.save(_meals); await _recordMealSuccess(); }
   }
 
   Future<void> _addMeal() async {
@@ -190,6 +206,7 @@ class _DiaryScreenState extends State<DiaryScreen> {
       setState(() => _meals.add(meal));
       try {
         await widget.repository.save(_meals);
+        await _recordMealSuccess();
       } catch (_) {
         if (mounted) setState(() => _error = 'Mahlzeit konnte nicht gespeichert werden.');
       }
@@ -305,3 +322,4 @@ class _FoodPortionDialogState extends State<_FoodPortionDialog> {
   @override void dispose() { _grams.dispose(); super.dispose(); }
   @override Widget build(BuildContext context) { final grams = double.tryParse(_grams.text.replaceAll(',', '.')) ?? 100; final totals = const NutritionCalculator().forPortion(widget.food, grams < 0 ? 0 : grams); return AlertDialog(title: Text(widget.food.name), content: TextField(controller: _grams, onChanged: (_) => setState(() {}), keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: InputDecoration(labelText: 'Menge (g)', helperText: '${totals.kcal?.round() ?? '—'} kcal')), actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('Abbrechen')), FilledButton(onPressed: () { if (grams <= 0) return; Navigator.pop(context, Meal(name: widget.food.name, grams: grams, kcal: totals.kcal ?? 0, proteinGrams: totals.proteinGrams ?? 0, carbohydrateGrams: totals.carbohydrateGrams ?? 0, fatGrams: totals.fatGrams ?? 0, loggedAt: DateTime.now())); }, child: const Text('Übernehmen'))]); }
 }
+
