@@ -52,7 +52,7 @@ class _SpecialRewardMomentScreenState extends State<SpecialRewardMomentScreen>
                   bottom: 190,
                   child: Opacity(
                     opacity: ((_controller.value - .25) * 1.4).clamp(0, 1),
-                    child: const Text(
+                    child: Text(
                       '${widget.animal} feuert dich an: Deine NutriWorld wächst weiter!',
                       textAlign: TextAlign.center,
                       style: TextStyle(fontSize: 17, color: Color(0xFF6A4300)),
