@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class SpecialRewardMomentScreen extends StatefulWidget {
   const SpecialRewardMomentScreen({super.key, required this.successes, required this.animation, required this.animal});
@@ -15,10 +16,23 @@ class _SpecialRewardMomentScreenState extends State<SpecialRewardMomentScreen>
     with SingleTickerProviderStateMixin {
   late final String companion = _randomCompanion(widget.animal);
   late final bool companionFromLeft = Random().nextBool();
+  bool _strongFeedbackSent = false;
   late final AnimationController _controller = AnimationController(
     vsync: this,
     duration: const Duration(milliseconds: 2400),
   )..forward();
+
+  @override
+  void initState() {
+    super.initState();
+    _controller.addListener(() {
+      if (_controller.value > .35 && !_strongFeedbackSent) {
+        _strongFeedbackSent = true;
+        HapticFeedback.mediumImpact();
+      }
+    });
+    HapticFeedback.lightImpact();
+  }
 
   @override
   void dispose() {
