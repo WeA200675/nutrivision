@@ -36,7 +36,12 @@ class _SpecialRewardMomentScreenState extends State<SpecialRewardMomentScreen>
                 Positioned.fill(child: CustomPaint(painter: _BurstPainter(_controller.value))),
                 Transform.scale(
                   scale: .72 + .28 * t,
-                  child: Text(_animalEmoji(widget.animal), style: const TextStyle(fontSize: 112)),
+                  child: Container(
+                    width: 250, height: 250,
+                    decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white.withValues(alpha: .88), boxShadow: const [BoxShadow(color: Color(0x446A4300), blurRadius: 24, spreadRadius: 4)]),
+                    alignment: Alignment.center,
+                    child: Text(_animalEmoji(widget.animal), style: const TextStyle(fontSize: 180)),
+                  ),
                 ),
                 Positioned(
                   top: 150,
@@ -44,7 +49,7 @@ class _SpecialRewardMomentScreenState extends State<SpecialRewardMomentScreen>
                     opacity: _controller.value.clamp(0, 1),
                     child: Text(
                       '${widget.animation} · Dreifach stark!',
-                      style: TextStyle(fontSize: 32, fontWeight: FontWeight.w800, color: Color(0xFF6A4300)),
+                      style: TextStyle(fontSize: 26, fontWeight: FontWeight.w800, color: Color(0xFF6A4300)),
                     ),
                   ),
                 ),
