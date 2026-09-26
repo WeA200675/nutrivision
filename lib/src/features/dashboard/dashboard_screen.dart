@@ -11,6 +11,7 @@ import '../stats/statistics_screen.dart';
 import '../rewards/nutri_world.dart';
 import '../rewards/nutri_world_screen.dart';
 import '../rewards/reward_events.dart';
+import '../rewards/water_moment_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class DashboardScreen extends StatefulWidget {
