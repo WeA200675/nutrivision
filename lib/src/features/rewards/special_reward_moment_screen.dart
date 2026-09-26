@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 
 class SpecialRewardMomentScreen extends StatefulWidget {
@@ -34,14 +35,20 @@ class _SpecialRewardMomentScreenState extends State<SpecialRewardMomentScreen>
               alignment: Alignment.center,
               children: [
                 Positioned.fill(child: CustomPaint(painter: _BurstPainter(_controller.value, widget.animation))),
-                Transform.scale(
-                  scale: .72 + .28 * t,
-                  child: Container(
-                    width: MediaQuery.sizeOf(context).shortestSide * .62,
-                    height: MediaQuery.sizeOf(context).shortestSide * .62,
-                    decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white.withValues(alpha: .88), boxShadow: const [BoxShadow(color: Color(0x446A4300), blurRadius: 24, spreadRadius: 4)]),
-                    alignment: Alignment.center,
-                    child: Text(_animalEmoji(widget.animal), style: TextStyle(fontSize: MediaQuery.sizeOf(context).shortestSide * .45)),
+                Transform.translate(
+                  offset: Offset(0, -18 * (1 - t) + 5 * sin(_controller.value * 6.28)),
+                  child: Transform.rotate(
+                    angle: .045 * sin(_controller.value * 6.28),
+                    child: Transform.scale(
+                      scale: .72 + .28 * t,
+                      child: Container(
+                        width: MediaQuery.sizeOf(context).shortestSide * .62,
+                        height: MediaQuery.sizeOf(context).shortestSide * .62,
+                        decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white.withValues(alpha: .88), boxShadow: const [BoxShadow(color: Color(0x446A4300), blurRadius: 24, spreadRadius: 4)]),
+                        alignment: Alignment.center,
+                        child: Text(_animalEmoji(widget.animal), style: TextStyle(fontSize: MediaQuery.sizeOf(context).shortestSide * .45)),
+                      ),
+                    ),
                   ),
                 ),
                 Positioned(
