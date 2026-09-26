@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dietary_preferences_screen.dart';
 
 class RecommendationsScreen extends StatefulWidget {
   const RecommendationsScreen({super.key});
@@ -24,6 +25,7 @@ class _RecommendationsScreenState extends State<RecommendationsScreen> {
     return Scaffold(appBar: AppBar(title: const Text('Essensideen')), body: ListView(padding: const EdgeInsets.all(16), children: [
       const Text('Was möchtest du heute vermeiden?', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
       const SizedBox(height: 10), Wrap(spacing: 8, children: [for (final filter in ['vegetarisch', 'vegan', 'laktosefrei', 'nussfrei']) FilterChip(label: Text(filter), selected: excluded.contains(filter), onSelected: (selected) => _toggle(filter, selected))]),
+      Align(alignment: Alignment.centerLeft, child: TextButton.icon(onPressed: () async { await Navigator.push(context, MaterialPageRoute(builder: (_) => const DietaryPreferencesScreen())); await _loadPreferences(); }, icon: const Icon(Icons.tune), label: const Text('Allergien & Vorlieben bearbeiten'))),
       const SizedBox(height: 20),
       if (visible.isEmpty) const Card(child: Padding(padding: EdgeInsets.all(20), child: Text('Keine Idee passt zu den aktuellen Filtern. Entferne einen Filter, um weitere Vorschläge zu sehen.'))),
       for (final item in visible) Card(child: ListTile(onTap: () => _showDetails(item), leading: CircleAvatar(backgroundColor: item.$5.withValues(alpha: .18), child: Icon(item.$4, color: item.$5)), title: Text(item.$1), subtitle: Text('${item.$2}\n${item.$3.join(' · ')}'), isThreeLine: true, trailing: const Icon(Icons.arrow_forward_ios, size: 16))),
