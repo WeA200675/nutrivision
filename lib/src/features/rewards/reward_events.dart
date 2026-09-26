@@ -1,4 +1,23 @@
 import 'nutri_world.dart';
 enum RewardEvent { mealLogged, waterLogged, activityCompleted, recipeCreated, foodFavorited, profileCompleted, calorieGoalReached, proteinGoalReached }
 extension RewardEventMapping on RewardEvent { WorldTheme get theme => switch(this){RewardEvent.mealLogged=>WorldTheme.garden,RewardEvent.waterLogged=>WorldTheme.pond,RewardEvent.activityCompleted=>WorldTheme.path,RewardEvent.recipeCreated=>WorldTheme.kitchen,RewardEvent.foodFavorited=>WorldTheme.pantry,RewardEvent.profileCompleted=>WorldTheme.tree,RewardEvent.calorieGoalReached=>WorldTheme.garden,RewardEvent.proteinGoalReached=>WorldTheme.tree}; int get points => switch(this){RewardEvent.calorieGoalReached=>3,RewardEvent.proteinGoalReached=>2,_=>1}; }
-class RewardService { const RewardService(this.repository); final NutriWorldRepository repository; Future<void> record(RewardEvent event)=>repository.award(event.theme,event.points); }
+class RewardResult {
+  const RewardResult({required this.successes, required this.specialMoment});
+  final int successes;
+  final bool specialMoment;
+}
+
+class RewardService {
+  const RewardService(this.repository);
+  final NutriWorldRepository repository;
+  static const _successKey = 'nutri-world.successes.v1';
+
+  Future<RewardResult> record(RewardEvent event) async {
+    await repository.award(event.theme, event.points);
+    final current = repository.preferences.getInt(_successKey) ?? 0;
+    final successes = current + 1;
+    await repository.preferences.setInt(_successKey, successes % 3);
+    return RewardResult(successes: successes, specialMoment: successes % 3 == 0);
+  }
+}
+
