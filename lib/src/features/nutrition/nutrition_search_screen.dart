@@ -22,6 +22,7 @@ class _NutritionSearchScreenState extends State<NutritionSearchScreen> {
   void _onChanged(String value) {
     _debounce?.cancel();
     _debounce = Timer(const Duration(milliseconds: 350), () async {
+      if (mounted) setState(() => _controller.isLoading = value.trim().length >= 2);
       await _controller.search(value);
       if (mounted) setState(() {});
     });
