@@ -14,9 +14,9 @@ class _WaterMomentScreenState extends State<WaterMomentScreen> with SingleTicker
       final t = controller.value;
       return Stack(alignment: Alignment.center, children: [
         Positioned.fill(child: CustomPaint(painter: _PondPainter(t))),
-        Transform.translate(offset: Offset(-180 + 360 * t, 20), child: const Text('🐢', style: TextStyle(fontSize: 72))),
-        Positioned(left: 100 + 180 * t, top: 300, child: Opacity(opacity: (t * 2).clamp(0.0, 1.0), child: const Text('🐟', style: TextStyle(fontSize: 34)))),
-        Positioned(right: 100 + 160 * (1 - t), top: 390, child: Opacity(opacity: ((t - .2) * 2).clamp(0.0, 1.0), child: const Text('🐟', style: TextStyle(fontSize: 30)))),
+        Transform.translate(offset: Offset(-110 + 220 * t, 20), child: Container(width: 190, height: 190, decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white.withValues(alpha: .7)), alignment: Alignment.center, child: const Text('🐢', style: TextStyle(fontSize: 116)))),
+        Positioned(left: 110 + 120 * t, top: 310, child: Opacity(opacity: (t * 2).clamp(0.0, 1.0), child: const Text('🐟', style: TextStyle(fontSize: 52)))),
+        Positioned(right: 110 + 100 * (1 - t), top: 410, child: Opacity(opacity: ((t - .2) * 2).clamp(0.0, 1.0), child: const Text('🐟', style: TextStyle(fontSize: 46)))),
         Positioned(bottom: 120, child: Opacity(opacity: t, child: const Text('+1 Teichwachstum', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF175B73))))),
         Positioned(top: 70, right: 20, child: TextButton(onPressed: () => Navigator.pop(context), child: const Text('Überspringen'))),
       ]);
