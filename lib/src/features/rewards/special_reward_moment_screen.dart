@@ -42,7 +42,7 @@ class _SpecialRewardMomentScreenState extends State<SpecialRewardMomentScreen>
                   top: 150,
                   child: Opacity(
                     opacity: _controller.value.clamp(0, 1),
-                    child: const Text(
+                    child: Text(
                       '${widget.animation} · Dreifach stark!',
                       style: TextStyle(fontSize: 32, fontWeight: FontWeight.w800, color: Color(0xFF6A4300)),
                     ),
