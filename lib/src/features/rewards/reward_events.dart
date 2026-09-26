@@ -1,0 +1,4 @@
+import 'nutri_world.dart';
+enum RewardEvent { mealLogged, waterLogged, activityCompleted, recipeCreated, foodFavorited, profileCompleted, calorieGoalReached, proteinGoalReached }
+extension RewardEventMapping on RewardEvent { WorldTheme get theme => switch(this){RewardEvent.mealLogged=>WorldTheme.garden,RewardEvent.waterLogged=>WorldTheme.pond,RewardEvent.activityCompleted=>WorldTheme.path,RewardEvent.recipeCreated=>WorldTheme.kitchen,RewardEvent.foodFavorited=>WorldTheme.pantry,RewardEvent.profileCompleted=>WorldTheme.tree,RewardEvent.calorieGoalReached=>WorldTheme.garden,RewardEvent.proteinGoalReached=>WorldTheme.tree}; int get points => switch(this){RewardEvent.calorieGoalReached=>3,RewardEvent.proteinGoalReached=>2,_=>1}; }
+class RewardService { const RewardService(this.repository); final NutriWorldRepository repository; Future<void> record(RewardEvent event)=>repository.award(event.theme,event.points); }
