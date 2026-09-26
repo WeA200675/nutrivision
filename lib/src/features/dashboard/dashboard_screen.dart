@@ -7,6 +7,7 @@ import '../profile/profile_repository.dart';
 import '../profile/user_profile.dart';
 import '../activity/activity_screen.dart';
 import '../activity/activity_repository.dart';
+import '../stats/statistics_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -28,7 +29,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       _tile(context, 'Wasser', '${water / 1000} / 2,0 l', Icons.water_drop, const Color(0xFFCDEBFF), () => setState(() => water += 250)),
       _tile(context, 'Bewegung', 'Aufgabe des Tages', Icons.directions_walk, const Color(0xFFFFD6E7), () async { final prefs = await SharedPreferences.getInstance(); if (!context.mounted) return; Navigator.push(context, MaterialPageRoute(builder: (_) => ActivityScreen(repository: ActivityRepository(prefs)))); }),
       _tile(context, 'Lebensmittel', 'Suche und Barcode', Icons.qr_code_scanner, const Color(0xFFE4D8FF), () => Navigator.push(context, MaterialPageRoute(builder: (_) => DiaryScreen(repository: widget.repository, catalog: widget.catalog)))),
-      _tile(context, 'Statistik', 'Dein Fortschritt', Icons.show_chart, const Color(0xFFD7F2D1), () {}),
+      _tile(context, 'Statistik', 'Dein Fortschritt', Icons.show_chart, const Color(0xFFD7F2D1), () => Navigator.push(context, MaterialPageRoute(builder: (_) => StatisticsScreen(repository: widget.repository)))),
     ]),
   );
   Widget _tile(BuildContext context, String title, String subtitle, IconData icon, Color color, VoidCallback onTap) => Card(color: color, clipBehavior: Clip.antiAlias, child: InkWell(onTap: onTap, borderRadius: BorderRadius.circular(12), child: Stack(children: [Positioned(right: 8, top: 18, child: Icon(icon, size: 176, color: Colors.white.withValues(alpha: 0.42))), Padding(padding: const EdgeInsets.all(16), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Icon(icon, size: 32, color: Theme.of(context).colorScheme.primary), const Spacer(), Text(title, style: Theme.of(context).textTheme.titleMedium), const SizedBox(height: 4), Text(subtitle)]))])));
