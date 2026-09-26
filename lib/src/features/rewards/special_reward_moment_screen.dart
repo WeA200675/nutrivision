@@ -14,6 +14,7 @@ class SpecialRewardMomentScreen extends StatefulWidget {
 class _SpecialRewardMomentScreenState extends State<SpecialRewardMomentScreen>
     with SingleTickerProviderStateMixin {
   late final String companion = _randomCompanion(widget.animal);
+  late final bool companionFromLeft = Random().nextBool();
   late final AnimationController _controller = AnimationController(
     vsync: this,
     duration: const Duration(milliseconds: 2400),
@@ -53,7 +54,8 @@ class _SpecialRewardMomentScreenState extends State<SpecialRewardMomentScreen>
                   ),
                 ),
                 Positioned(
-                  left: 28 + 150 * Curves.easeOut.transform(_controller.value),
+                  left: companionFromLeft ? 28 + 150 * Curves.easeOut.transform(_controller.value) : null,
+                  right: companionFromLeft ? null : 28 + 150 * Curves.easeOut.transform(_controller.value),
                   bottom: 210,
                   child: Opacity(
                     opacity: ((_controller.value - .3) * 1.5).clamp(0.0, 1.0),
