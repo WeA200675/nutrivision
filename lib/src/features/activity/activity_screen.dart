@@ -19,7 +19,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
     final prefs = await SharedPreferences.getInstance();
     final result = await RewardService(NutriWorldRepository(prefs)).record(RewardEvent.activityCompleted);
     if (result.specialMoment && mounted) {
-      await Navigator.push(context, MaterialPageRoute(builder: (_) => SpecialRewardMomentScreen(successes: result.successes)));
+      await Navigator.push(context, MaterialPageRoute(builder: (_) => SpecialRewardMomentScreen(successes: result.successes, animation: result.animation, animal: result.animal)));
     }
   }
 
