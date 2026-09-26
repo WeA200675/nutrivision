@@ -10,7 +10,7 @@ class _WaterMomentScreenState extends State<WaterMomentScreen> with SingleTicker
   @override void dispose() { controller.dispose(); super.dispose(); }
   @override Widget build(BuildContext context) => Scaffold(
     backgroundColor: const Color(0xFFDDF4FF),
-    body: AnimatedBuilder(animation: controller, builder: (context, _) {
+    body: SafeArea(child: AnimatedBuilder(animation: controller, builder: (context, _) {
       final t = controller.value;
       return Stack(alignment: Alignment.center, children: [
         Positioned.fill(child: CustomPaint(painter: _PondPainter(t))),
@@ -20,7 +20,7 @@ class _WaterMomentScreenState extends State<WaterMomentScreen> with SingleTicker
         Positioned(bottom: 120, child: Opacity(opacity: t, child: const Text('+1 Teichwachstum', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF175B73))))),
         Positioned(top: 70, right: 20, child: TextButton(onPressed: () => Navigator.pop(context), child: const Text('Überspringen'))),
       ]);
-    }),
+    })),
   );
 }
 
