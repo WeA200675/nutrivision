@@ -97,6 +97,6 @@ class _ProductImage extends StatelessWidget {
     child: SizedBox(width: 56, height: 56, child: url == null
       ? const ColoredBox(color: Color(0xFFE7F1E5), child: Icon(Icons.restaurant, color: Color(0xFF397A55)))
       : Image.network(url!, fit: BoxFit.cover, errorBuilder: (_, __, ___) => const ColoredBox(color: Color(0xFFE7F1E5), child: Icon(Icons.restaurant, color: Color(0xFF397A55)))),
-  );
+  ));
 }
 
