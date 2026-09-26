@@ -14,7 +14,7 @@ class _ActivityMomentScreenState extends State<ActivityMomentScreen> with Single
     return Stack(alignment: Alignment.center, children: [
       Positioned.fill(child: CustomPaint(painter: _TrackPainter(t))),
       Transform.translate(offset: Offset(-140 + 280 * t, -20), child: const Text('🐅', style: TextStyle(fontSize: 122))),
-      Positioned(top: 150, child: Opacity(opacity: t, child: const Text('Stark bewegt!', style: TextStyle(fontSize: 30, fontWeight: FontWeight.w800, color: Color(0xFF7A2344)))),
+      Positioned(top: 150, child: Opacity(opacity: t, child: const Text('Stark bewegt!', style: TextStyle(fontSize: 30, fontWeight: FontWeight.w800, color: Color(0xFF7A2344))))),
       Positioned(bottom: 160, child: Opacity(opacity: t, child: Text('${widget.minutes} Minuten geschafft – genau so weiter.', style: const TextStyle(fontSize: 17, color: Color(0xFF7A2344))))),
       Positioned(bottom: 65, child: FilledButton.icon(onPressed: () => Navigator.pop(context), icon: const Icon(Icons.directions_run), label: const Text('Weiter'))),
       Positioned(top: 36, right: 12, child: TextButton(onPressed: () => Navigator.pop(context), child: const Text('Überspringen'))),
