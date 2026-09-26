@@ -50,9 +50,26 @@ class _NutritionSearchScreenState extends State<NutritionSearchScreen> {
               OutlinedButton.icon(onPressed: () async { final prefs = await SharedPreferences.getInstance(); if (!mounted) return; final saved = await Navigator.push(context, MaterialPageRoute(builder: (_) => ManualFoodScreen(catalog: LocalFoodCatalog(prefs), barcode: RegExp(r'^\d{8,14}$').hasMatch(_query.text.trim()) ? _query.text.trim() : null))); if (saved == true && mounted) { await _controller.search(_query.text); setState(() {}); } }, icon: const Icon(Icons.add), label: const Text('Eigenes Lebensmittel anlegen')),
             Expanded(child: ListView.builder(itemCount: _controller.results.length, itemBuilder: (context, index) {
               final food = _controller.results[index];
-              return ListTile(title: Text(food.name), subtitle: Text('${food.kcalPer100g?.round() ?? '—'} kcal / 100 g'), onTap: () => Navigator.pop(context, food));
+              return ListTile(
+                leading: _ProductImage(url: food.imageUrl),
+                title: Text(food.name),
+                subtitle: Text('${food.kcalPer100g?.round() ?? '—'} kcal / 100 g'),
+                onTap: () => Navigator.pop(context, food),
+              );
             })),
           ]),
         ),
       );
 }
+
+class _ProductImage extends StatelessWidget {
+  const _ProductImage({this.url});
+  final String? url;
+  @override Widget build(BuildContext context) => ClipRRect(
+    borderRadius: BorderRadius.circular(10),
+    child: SizedBox(width: 56, height: 56, child: url == null
+      ? const ColoredBox(color: Color(0xFFE7F1E5), child: Icon(Icons.restaurant, color: Color(0xFF397A55)))
+      : Image.network(url!, fit: BoxFit.cover, errorBuilder: (_, __, ___) => const ColoredBox(color: Color(0xFFE7F1E5), child: Icon(Icons.restaurant, color: Color(0xFF397A55)))),
+  );
+}
+
