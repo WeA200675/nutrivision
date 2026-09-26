@@ -26,6 +26,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
   int water = 0;
   bool _addingWater = false;
   UserProfile? profile;
+  int get _waterGoalMl {
+    final weight = profile?.weightKg;
+    if (weight == null || weight <= 0) return 2000;
+    return (weight * 30).round().clamp(1500, 3500);
+  }
   @override void initState(){super.initState(); _loadProfile();}
   Future<void> _loadProfile() async { final prefs=await SharedPreferences.getInstance(); final loaded=ProfileRepository(prefs).load(); final todayWater=WaterRepository(prefs).load(DateTime.now()); if(mounted)setState(() { profile=loaded; water=todayWater; }); }
   @override Widget build(BuildContext context) => Scaffold(
@@ -33,7 +38,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     body: GridView.count(crossAxisCount: 2, padding: const EdgeInsets.all(16), crossAxisSpacing: 12, mainAxisSpacing: 12, children: [
       _tile(context, 'Heute', profile == null ? 'Profil einrichten' : '0 / ${profile!.safeDailyCalories.round()} kcal', Icons.local_fire_department, const Color(0xFFFFE0B2), () => Navigator.push(context, MaterialPageRoute(builder: (_) => DiaryScreen(repository: widget.repository, catalog: widget.catalog)))),
       _tile(context, 'Mein Profil', profile == null ? 'Noch nicht eingerichtet' : 'BMI ${profile!.bmi.toStringAsFixed(1)}', Icons.person, const Color(0xFFD7E8FF), () => Navigator.push(context, MaterialPageRoute(builder: (_) => ProfileScreen(initial: profile, onSaved: (saved) { setState(() => profile = saved); SharedPreferences.getInstance().then((prefs) => ProfileRepository(prefs).save(saved)); })))),
-      _tile(context, 'Wasser', '${water / 1000} / 2,0 l', Icons.water_drop, const Color(0xFFCDEBFF), _addingWater ? () {} : _addWater),
+      _tile(context, 'Wasser', '${(water / 1000).toStringAsFixed(2)} / ${(_waterGoalMl / 1000).toStringAsFixed(1)} l', Icons.water_drop, const Color(0xFFCDEBFF), _addingWater ? () {} : _addWater),
       _tile(context, 'Bewegung', 'Aufgabe des Tages', Icons.directions_walk, const Color(0xFFFFD6E7), () async { final prefs = await SharedPreferences.getInstance(); if (!context.mounted) return; Navigator.push(context, MaterialPageRoute(builder: (_) => ActivityScreen(repository: ActivityRepository(prefs)))); }),
       _tile(context, 'Lebensmittel', 'Suche und Barcode', Icons.qr_code_scanner, const Color(0xFFE4D8FF), () => Navigator.push(context, MaterialPageRoute(builder: (_) => DiaryScreen(repository: widget.repository, catalog: widget.catalog)))),
       _tile(context, 'Statistik', 'Dein Fortschritt', Icons.show_chart, const Color(0xFFD7F2D1), () => Navigator.push(context, MaterialPageRoute(builder: (_) => StatisticsScreen(repository: widget.repository)))), _tile(context, 'NutriWorld', 'Deine Welt wächst', Icons.public, const Color(0xFFFFE6A8), () async { final prefs = await SharedPreferences.getInstance(); if (!context.mounted) return; Navigator.push(context, MaterialPageRoute(builder: (_) => NutriWorldScreen(repository: NutriWorldRepository(prefs)))); }),
