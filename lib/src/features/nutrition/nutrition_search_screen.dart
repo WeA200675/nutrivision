@@ -6,6 +6,7 @@ import 'local_food_catalog.dart';
 import 'manual_food_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'favorite_food_repository.dart';
+import '../ocr/ocr_capture_screen.dart';
 import '../rewards/nutri_world.dart';
 import '../rewards/reward_events.dart';
 
@@ -62,7 +63,10 @@ class _NutritionSearchScreenState extends State<NutritionSearchScreen> {
             if (_controller.isLoading) const LinearProgressIndicator(),
             if (_controller.error != null) Text(_controller.error!, style: TextStyle(color: Theme.of(context).colorScheme.error)),
             if (!_controller.isLoading && _query.text.trim().length >= 2 && _controller.results.isEmpty)
-              OutlinedButton.icon(onPressed: () async { final prefs = await SharedPreferences.getInstance(); if (!mounted) return; final saved = await Navigator.push(context, MaterialPageRoute(builder: (_) => ManualFoodScreen(catalog: LocalFoodCatalog(prefs), barcode: RegExp(r'^\d{8,14}$').hasMatch(_query.text.trim()) ? _query.text.trim() : null))); if (saved == true && mounted) { await _controller.search(_query.text); setState(() {}); } }, icon: const Icon(Icons.add), label: const Text('Eigenes Lebensmittel anlegen')),
+              Column(children: [
+                OutlinedButton.icon(onPressed: () async { final prefs = await SharedPreferences.getInstance(); if (!mounted) return; final saved = await Navigator.push(context, MaterialPageRoute(builder: (_) => ManualFoodScreen(catalog: LocalFoodCatalog(prefs), barcode: RegExp(r'^\d{8,14}$').hasMatch(_query.text.trim()) ? _query.text.trim() : null))); if (saved == true && mounted) { await _controller.search(_query.text); setState(() {}); } }, icon: const Icon(Icons.add), label: const Text('Eigenes Lebensmittel anlegen')),
+                OutlinedButton.icon(onPressed: () async { final prefs = await SharedPreferences.getInstance(); if (!mounted) return; await Navigator.push(context, MaterialPageRoute(builder: (_) => OcrCaptureScreen(catalog: LocalFoodCatalog(prefs), barcode: RegExp(r'^\d{8,14}$').hasMatch(_query.text.trim()) ? _query.text.trim() : null))); await _controller.search(_query.text); if (mounted) setState(() {}); }, icon: const Icon(Icons.document_scanner), label: const Text('Nährwertfoto erkennen')),
+              ]),
             Expanded(child: ListView.builder(itemCount: _sortedResults.length, itemBuilder: (context, index) {
               final food = _sortedResults[index];
               return ListTile(
