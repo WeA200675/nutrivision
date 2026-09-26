@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
 class SpecialRewardMomentScreen extends StatefulWidget {
-  const SpecialRewardMomentScreen({super.key, required this.successes});
+  const SpecialRewardMomentScreen({super.key, required this.successes, required this.animation, required this.animal});
   final int successes;
+  final String animation;
+  final String animal;
 
   @override
   State<SpecialRewardMomentScreen> createState() => _SpecialRewardMomentScreenState();
@@ -34,14 +36,14 @@ class _SpecialRewardMomentScreenState extends State<SpecialRewardMomentScreen>
                 Positioned.fill(child: CustomPaint(painter: _BurstPainter(_controller.value))),
                 Transform.scale(
                   scale: .72 + .28 * t,
-                  child: const Text('✨', style: TextStyle(fontSize: 112)),
+                  child: Text(_animalEmoji(widget.animal), style: const TextStyle(fontSize: 112)),
                 ),
                 Positioned(
                   top: 150,
                   child: Opacity(
                     opacity: _controller.value.clamp(0, 1),
                     child: const Text(
-                      'Dreifach stark!',
+                      '${widget.animation} · Dreifach stark!',
                       style: TextStyle(fontSize: 32, fontWeight: FontWeight.w800, color: Color(0xFF6A4300)),
                     ),
                   ),
@@ -51,7 +53,7 @@ class _SpecialRewardMomentScreenState extends State<SpecialRewardMomentScreen>
                   child: Opacity(
                     opacity: ((_controller.value - .25) * 1.4).clamp(0, 1),
                     child: const Text(
-                      'Drei Erfolge gesammelt – deine NutriWorld wächst weiter!',
+                      '${widget.animal} feuert dich an: Deine NutriWorld wächst weiter!',
                       textAlign: TextAlign.center,
                       style: TextStyle(fontSize: 17, color: Color(0xFF6A4300)),
                     ),
@@ -76,6 +78,10 @@ class _SpecialRewardMomentScreenState extends State<SpecialRewardMomentScreen>
         ),
       );
 }
+
+String _animalEmoji(String animal) => switch (animal) {
+      'Giraffe' => '🦒', 'Tiger' => '🐅', 'Kuh' => '🐄', 'Wasserschildkröte' => '🐢', _ => '🐘'
+    };
 
 class _BurstPainter extends CustomPainter {
   const _BurstPainter(this.progress);
