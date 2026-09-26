@@ -3,6 +3,32 @@ import 'package:image_picker/image_picker.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'ocr_review_screen.dart';
 import '../nutrition/local_food_catalog.dart';
-class OcrCaptureScreen extends StatefulWidget { const OcrCaptureScreen({super.key,this.catalog,this.barcode}); final LocalFoodCatalog? catalog; final String? barcode; @override State<OcrCaptureScreen> createState()=>_OcrCaptureScreenState(); }
-class _OcrCaptureScreenState extends State<OcrCaptureScreen>{bool busy=false;String? error;final picker=ImagePicker();final recognizer=TextRecognizer();@override void dispose(){recognizer.close();super.dispose();}Future<void> pick(ImageSource source)async{setState((){busy=true;error=null;});try{final image=await picker.pickImage(source:source);if(image==null)return;final result=await recognizer.processImage(InputImage.fromFilePath(image.path));if(!mounted)return;await Navigator.push(context,MaterialPageRoute(builder:(_)=>OcrReviewScreen(rawText:result.text)));}catch(_){if(mounted)setState(()=>error='Bild konnte nicht gelesen werden.');}finally{if(mounted)setState(()=>busy=false);}}@override Widget build(BuildContext c)=>Scaffold(appBar:AppBar(title:const Text('Nährwerttabelle lesen')),body:Center(child:Padding(padding:const EdgeInsets.all(24),child:Column(mainAxisSize:MainAxisSize.min,children:[const Text('Fotografiere die Nährwerttabelle oder wähle ein Bild aus.'),const SizedBox(height:20),if(busy)const CircularProgressIndicator(),if(!busy)Row(mainAxisAlignment:MainAxisAlignment.center,children:[FilledButton.icon(onPressed:()=>pick(ImageSource.camera),icon:const Icon(Icons.camera_alt),label:const Text('Kamera')),const SizedBox(width:12),OutlinedButton.icon(onPressed:()=>pick(ImageSource.gallery),icon:const Icon(Icons.photo),label:const Text('Galerie'))]),if(error!=null)Padding(padding:const EdgeInsets.all(16),child:Text(error!,style:TextStyle(color:Theme.of(c).colorScheme.error)))])));}
+
+class OcrCaptureScreen extends StatefulWidget {
+  const OcrCaptureScreen({super.key, this.catalog, this.barcode});
+  final LocalFoodCatalog? catalog;
+  final String? barcode;
+  @override State<OcrCaptureScreen> createState() => _OcrCaptureScreenState();
+}
+
+class _OcrCaptureScreenState extends State<OcrCaptureScreen> {
+  bool busy = false;
+  String? error;
+  final picker = ImagePicker();
+  final recognizer = TextRecognizer();
+  @override void dispose() { recognizer.close(); super.dispose(); }
+  Future<void> pick(ImageSource source) async {
+    setState(() { busy = true; error = null; });
+    try {
+      final image = await picker.pickImage(source: source);
+      if (image == null) return;
+      final result = await recognizer.processImage(InputImage.fromFilePath(image.path));
+      if (!mounted) return;
+      await Navigator.push(context, MaterialPageRoute(builder: (_) => OcrReviewScreen(rawText: result.text, catalog: widget.catalog, barcode: widget.barcode)));
+    } catch (_) {
+      if (mounted) setState(() => error = 'Bild konnte nicht gelesen werden.');
+    } finally { if (mounted) setState(() => busy = false); }
+  }
+  @override Widget build(BuildContext context) => Scaffold(appBar: AppBar(title: const Text('Nährwerttabelle lesen')), body: Center(child: Padding(padding: const EdgeInsets.all(24), child: Column(mainAxisSize: MainAxisSize.min, children: [const Text('Fotografiere die Nährwerttabelle oder wähle ein Bild aus.'), const SizedBox(height: 20), if (busy) const CircularProgressIndicator(), if (!busy) Row(mainAxisAlignment: MainAxisAlignment.center, children: [FilledButton.icon(onPressed: () => pick(ImageSource.camera), icon: const Icon(Icons.camera_alt), label: const Text('Kamera')), const SizedBox(width: 12), OutlinedButton.icon(onPressed: () => pick(ImageSource.gallery), icon: const Icon(Icons.photo), label: const Text('Galerie'))]), if (error != null) Padding(padding: const EdgeInsets.all(16), child: Text(error!, style: TextStyle(color: Theme.of(context).colorScheme.error)))]))));
+}
 
