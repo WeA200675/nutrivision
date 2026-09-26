@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../diary/meal_repository.dart';
 import 'statistics.dart';
-import '../widgets/nutrition_ring.dart';
+import '../../widgets/nutrition_ring.dart';
 
 class StatisticsScreen extends StatefulWidget {
   const StatisticsScreen({super.key, required this.repository});
