@@ -17,7 +17,12 @@ class NutritionSearchController {
     }
     isLoading = true;
     try {
-      results = await catalog.search(normalized);
+      if (RegExp(r'^\d{8,14}$').hasMatch(normalized)) {
+        final product = await catalog.findByBarcode(normalized);
+        results = product == null ? const [] : [product];
+      } else {
+        results = await catalog.search(normalized);
+      }
     } catch (_) {
       results = const [];
       error = 'Lebensmittel konnten nicht geladen werden.';
