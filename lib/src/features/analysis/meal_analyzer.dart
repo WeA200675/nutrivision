@@ -1,4 +1,3 @@
-import '../diary/meal.dart';
 
 /// Future implementations can analyze photos without changing the diary UI.
 abstract interface class MealAnalyzer {
@@ -11,3 +10,4 @@ class MealSuggestion {
   final String name;
   final double estimatedGrams;
 }
+
