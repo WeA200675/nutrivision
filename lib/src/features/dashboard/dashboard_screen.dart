@@ -49,14 +49,21 @@ class _DashboardScreenState extends State<DashboardScreen> {
     setState(() => _addingWater = true);
     try {
       final prefs = await SharedPreferences.getInstance();
+      final before = WaterRepository(prefs).load(DateTime.now());
       await WaterRepository(prefs).add(DateTime.now(), milliliters: 250);
       if (!mounted) return;
-      setState(() => water = WaterRepository(prefs).load(DateTime.now()));
-      final result = await RewardService(NutriWorldRepository(prefs)).record(RewardEvent.waterLogged);
+      final after = WaterRepository(prefs).load(DateTime.now());
+      setState(() => water = after);
+      final rewards = RewardService(NutriWorldRepository(prefs));
+      final result = await rewards.record(RewardEvent.waterLogged);
       if (!mounted) return;
       await Navigator.push(context, MaterialPageRoute(builder: (_) => const WaterMomentScreen()));
       if (result.specialMoment && mounted) {
         await Navigator.push(context, MaterialPageRoute(builder: (_) => SpecialRewardMomentScreen(successes: result.successes, animation: result.animation, animal: result.animal)));
+      }
+      if (before < _waterGoalMl && after >= _waterGoalMl && mounted) {
+        await rewards.record(RewardEvent.calorieGoalReached);
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Trinkziel erreicht – deine NutriWorld erhält einen Bonus!')));
       }
     } catch (_) {
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Wasser konnte nicht gespeichert werden.')));
