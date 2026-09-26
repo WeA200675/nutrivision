@@ -13,6 +13,7 @@ import '../rewards/nutri_world_screen.dart';
 import '../rewards/reward_events.dart';
 import '../rewards/water_moment_screen.dart';
 import '../rewards/special_reward_moment_screen.dart';
+import '../hydration/water_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -25,7 +26,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   int water = 0;
   UserProfile? profile;
   @override void initState(){super.initState(); _loadProfile();}
-  Future<void> _loadProfile() async { final prefs=await SharedPreferences.getInstance(); final loaded=ProfileRepository(prefs).load(); if(mounted)setState(()=>profile=loaded); }
+  Future<void> _loadProfile() async { final prefs=await SharedPreferences.getInstance(); final loaded=ProfileRepository(prefs).load(); final todayWater=WaterRepository(prefs).load(DateTime.now()); if(mounted)setState(() { profile=loaded; water=todayWater; }); }
   @override Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(title: const Text('🌻 NutriVision')),
     body: GridView.count(crossAxisCount: 2, padding: const EdgeInsets.all(16), crossAxisSpacing: 12, mainAxisSpacing: 12, children: [
@@ -38,8 +39,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
     ]),
   );
   Future<void> _addWater() async {
-    setState(() => water += 250);
     final prefs = await SharedPreferences.getInstance();
+    await WaterRepository(prefs).add(DateTime.now(), milliliters: 250);
+    if (!mounted) return;
+    setState(() => water = WaterRepository(prefs).load(DateTime.now()));
     final result = await RewardService(NutriWorldRepository(prefs)).record(RewardEvent.waterLogged);
     if (!mounted) return;
     await Navigator.push(context, MaterialPageRoute(builder: (_) => const WaterMomentScreen()));
