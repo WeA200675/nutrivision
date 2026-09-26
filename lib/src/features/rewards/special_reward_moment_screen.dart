@@ -13,6 +13,7 @@ class SpecialRewardMomentScreen extends StatefulWidget {
 
 class _SpecialRewardMomentScreenState extends State<SpecialRewardMomentScreen>
     with SingleTickerProviderStateMixin {
+  late final String companion = _randomCompanion(widget.animal);
   late final AnimationController _controller = AnimationController(
     vsync: this,
     duration: const Duration(milliseconds: 2400),
@@ -58,7 +59,7 @@ class _SpecialRewardMomentScreenState extends State<SpecialRewardMomentScreen>
                     opacity: ((_controller.value - .3) * 1.5).clamp(0.0, 1.0),
                     child: Transform.rotate(
                       angle: -.08,
-                      child: Text(_companionEmoji(widget.animal), style: const TextStyle(fontSize: 72)),
+                      child: Text(companion, style: const TextStyle(fontSize: 72)),
                     ),
                   ),
                 ),
@@ -107,13 +108,16 @@ String _animalEmoji(String animal) => switch (animal) {
       'Giraffe' => '🦒', 'Tiger' => '🐅', 'Kuh' => '🐄', 'Wasserschildkröte' => '🐢', _ => '🐘'
     };
 
-String _companionEmoji(String animal) => switch (animal) {
-      'Wasserschildkröte' => '🐟',
-      'Tiger' => '🦒',
-      'Giraffe' => '🐘',
-      'Kuh' => '🐅',
-      _ => '🦒',
-    };
+String _randomCompanion(String animal) {
+  final options = switch (animal) {
+    'Wasserschildkröte' => ['🐟', '🐠'],
+    'Tiger' => ['🦒', '🐘'],
+    'Giraffe' => ['🐘', '🐄'],
+    'Kuh' => ['🐅', '🦒'],
+    _ => ['🦒', '🐄'],
+  };
+  return options[Random().nextInt(options.length)];
+}
 
 class _BurstPainter extends CustomPainter {
   const _BurstPainter(this.progress, this.animation);
