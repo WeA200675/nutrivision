@@ -1,3 +1,5 @@
+enum MealType { breakfast, lunch, dinner, snack }
+
 class Meal {
   const Meal({
     required this.name,
@@ -7,6 +9,7 @@ class Meal {
     required this.carbohydrateGrams,
     required this.fatGrams,
     required this.loggedAt,
+    this.type = MealType.snack,
   });
 
   final String name;
@@ -16,4 +19,5 @@ class Meal {
   final double carbohydrateGrams;
   final double fatGrams;
   final DateTime loggedAt;
+  final MealType type;
 }
