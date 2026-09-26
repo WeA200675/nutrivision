@@ -14,6 +14,7 @@ import '../rewards/reward_events.dart';
 import '../rewards/water_moment_screen.dart';
 import '../rewards/special_reward_moment_screen.dart';
 import '../hydration/water_repository.dart';
+import '../recommendations/recommendations_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -41,6 +42,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       _tile(context, 'Wasser', '${(water / 1000).toStringAsFixed(2)} / ${(_waterGoalMl / 1000).toStringAsFixed(1)} l', Icons.water_drop, const Color(0xFFCDEBFF), _addingWater ? () {} : _addWater),
       _tile(context, 'Bewegung', 'Aufgabe des Tages', Icons.directions_walk, const Color(0xFFFFD6E7), () async { final prefs = await SharedPreferences.getInstance(); if (!context.mounted) return; Navigator.push(context, MaterialPageRoute(builder: (_) => ActivityScreen(repository: ActivityRepository(prefs)))); }),
       _tile(context, 'Lebensmittel', 'Suche und Barcode', Icons.qr_code_scanner, const Color(0xFFE4D8FF), () => Navigator.push(context, MaterialPageRoute(builder: (_) => DiaryScreen(repository: widget.repository, catalog: widget.catalog)))),
+      _tile(context, 'Essensideen', 'Passende Alternativen', Icons.lightbulb, const Color(0xFFFFE8C7), () => Navigator.push(context, MaterialPageRoute(builder: (_) => const RecommendationsScreen()))),
       _tile(context, 'Statistik', 'Dein Fortschritt', Icons.show_chart, const Color(0xFFD7F2D1), () => Navigator.push(context, MaterialPageRoute(builder: (_) => StatisticsScreen(repository: widget.repository)))), _tile(context, 'NutriWorld', 'Deine Welt wächst', Icons.public, const Color(0xFFFFE6A8), () async { final prefs = await SharedPreferences.getInstance(); if (!context.mounted) return; Navigator.push(context, MaterialPageRoute(builder: (_) => NutriWorldScreen(repository: NutriWorldRepository(prefs)))); }),
     ]),
   );
