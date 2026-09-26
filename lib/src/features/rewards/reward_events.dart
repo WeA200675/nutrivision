@@ -15,6 +15,7 @@ class RewardService {
   final NutriWorldRepository repository;
   static const _successKey = 'nutri-world.successes.v1';
   static const _historyKey = 'nutri-world.reward-history.v1';
+  static const _preparedKey = 'nutri-world.prepared-reward.v1';
   static const _animations = ['Sternenregen', 'Konfetti-Sprung', 'Lichtwelle', 'Farbwirbel', 'Goldener Funke', 'Kometenlauf'];
   static const _animals = ['Elefant', 'Giraffe', 'Tiger', 'Kuh', 'Wasserschildkröte'];
 
@@ -34,11 +35,18 @@ class RewardService {
     final history = repository.preferences.getStringList(_historyKey) ?? <String>[];
     final candidates = [for (final animation in _animations) for (final animal in _animalsFor(event)) '$animation|$animal'];
     final available = candidates.where((key) => !history.contains(key)).toList();
-    final selected = (available.isNotEmpty ? available : candidates)[Random().nextInt((available.isNotEmpty ? available : candidates).length)];
+    final prepared = repository.preferences.getString(_preparedKey);
+    final pool = available.isNotEmpty ? available : candidates;
+    final selected = prepared != null && pool.contains(prepared)
+        ? prepared
+        : pool[Random().nextInt(pool.length)];
     final parts = selected.split('|');
     // Jede vorbereitete Kombination wird einmal gezeigt, bevor der Katalog neu startet.
     final nextHistory = available.isEmpty ? <String>[selected] : [...history, selected];
     await repository.preferences.setStringList(_historyKey, nextHistory);
+    final nextPool = candidates.where((key) => !nextHistory.contains(key)).toList();
+    final nextPrepared = (nextPool.isNotEmpty ? nextPool : candidates)[Random().nextInt((nextPool.isNotEmpty ? nextPool : candidates).length)];
+    await repository.preferences.setString(_preparedKey, nextPrepared);
     return RewardResult(successes: successes, specialMoment: successes % 3 == 0, animation: parts[0], animal: parts[1]);
   }
 }
