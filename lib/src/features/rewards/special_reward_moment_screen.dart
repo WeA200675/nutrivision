@@ -52,6 +52,17 @@ class _SpecialRewardMomentScreenState extends State<SpecialRewardMomentScreen>
                   ),
                 ),
                 Positioned(
+                  left: 28 + 150 * Curves.easeOut.transform(_controller.value),
+                  bottom: 210,
+                  child: Opacity(
+                    opacity: ((_controller.value - .3) * 1.5).clamp(0.0, 1.0),
+                    child: Transform.rotate(
+                      angle: -.08,
+                      child: Text(_companionEmoji(widget.animal), style: const TextStyle(fontSize: 72)),
+                    ),
+                  ),
+                ),
+                Positioned(
                   top: 150,
                   child: Opacity(
                     opacity: _controller.value.clamp(0, 1),
@@ -94,6 +105,14 @@ class _SpecialRewardMomentScreenState extends State<SpecialRewardMomentScreen>
 
 String _animalEmoji(String animal) => switch (animal) {
       'Giraffe' => '🦒', 'Tiger' => '🐅', 'Kuh' => '🐄', 'Wasserschildkröte' => '🐢', _ => '🐘'
+    };
+
+String _companionEmoji(String animal) => switch (animal) {
+      'Wasserschildkröte' => '🐟',
+      'Tiger' => '🦒',
+      'Giraffe' => '🐘',
+      'Kuh' => '🐅',
+      _ => '🦒',
     };
 
 class _BurstPainter extends CustomPainter {
