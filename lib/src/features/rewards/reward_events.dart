@@ -28,8 +28,8 @@ class RewardService {
     final available = candidates.where((key) => !history.contains(key)).toList();
     final selected = (available.isNotEmpty ? available : candidates)[Random().nextInt((available.isNotEmpty ? available : candidates).length)];
     final parts = selected.split('|');
-    final nextHistory = [...history, selected];
-    if (nextHistory.length > 8) nextHistory.removeRange(0, nextHistory.length - 8);
+    // Jede vorbereitete Kombination wird einmal gezeigt, bevor der Katalog neu startet.
+    final nextHistory = available.isEmpty ? <String>[selected] : [...history, selected];
     await repository.preferences.setStringList(_historyKey, nextHistory);
     return RewardResult(successes: successes, specialMoment: successes % 3 == 0, animation: parts[0], animal: parts[1]);
   }
