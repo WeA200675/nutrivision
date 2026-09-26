@@ -11,6 +11,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../rewards/nutri_world.dart';
 import '../rewards/reward_events.dart';
 import '../rewards/special_reward_moment_screen.dart';
+import '../rewards/meal_moment_screen.dart';
 
 class DiaryScreen extends StatefulWidget {
   const DiaryScreen({super.key, required this.repository, required this.catalog});
@@ -141,6 +142,9 @@ class _DiaryScreenState extends State<DiaryScreen> {
   Future<void> _recordMealSuccess() async {
     final prefs = await SharedPreferences.getInstance();
     final result = await RewardService(NutriWorldRepository(prefs)).record(RewardEvent.mealLogged);
+    if (mounted) {
+      await Navigator.push(context, MaterialPageRoute(builder: (_) => MealMomentScreen(mealName: _meals.last.name)));
+    }
     if (result.specialMoment && mounted) {
       await Navigator.push(context, MaterialPageRoute(builder: (_) => SpecialRewardMomentScreen(
         successes: result.successes,
