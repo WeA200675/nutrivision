@@ -7,5 +7,5 @@ class BarcodeValidation {
   const BarcodeValidation._();
 
   static bool isSupported(String value) =>
-      RegExp(r'^\\d{8,14}$').hasMatch(value.trim());
+      RegExp(r'^\d{8,14}$').hasMatch(value.trim());
 }
