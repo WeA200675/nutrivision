@@ -11,6 +11,7 @@ class FoodItem {
     required this.proteinPer100g,
     required this.carbohydratePer100g,
     required this.fatPer100g,
+    this.imageUrl,
   });
 
   final String name;
@@ -18,4 +19,6 @@ class FoodItem {
   final double? proteinPer100g;
   final double? carbohydratePer100g;
   final double? fatPer100g;
+  final String? imageUrl;
 }
+
