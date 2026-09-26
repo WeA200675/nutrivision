@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'src/features/diary/meal_repository.dart';
 import 'src/features/diary/diary_screen.dart';
+import 'src/features/dashboard/dashboard_screen.dart';
 import 'src/features/nutrition/open_food_facts_catalog.dart';
 import 'src/features/nutrition/nutrition_catalog.dart';
 
@@ -55,6 +56,6 @@ class NutriVisionApp extends StatelessWidget {
           ),
           useMaterial3: true,
         ),
-        home: DiaryScreen(repository: repository, catalog: catalog),
+        home: DashboardScreen(repository: repository, catalog: catalog),
       );
 }
