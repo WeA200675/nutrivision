@@ -28,7 +28,7 @@ class _SpecialRewardMomentScreenState extends State<SpecialRewardMomentScreen>
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        backgroundColor: const Color(0xFFFFF4D8),
+        backgroundColor: _sceneColor(widget.animation),
         body: SafeArea(child: AnimatedBuilder(
           animation: _controller,
           builder: (context, _) {
@@ -108,6 +108,15 @@ class _SpecialRewardMomentScreenState extends State<SpecialRewardMomentScreen>
 
 String _animalEmoji(String animal) => switch (animal) {
       'Giraffe' => '🦒', 'Tiger' => '🐅', 'Kuh' => '🐄', 'Wasserschildkröte' => '🐢', _ => '🐘'
+    };
+
+Color _sceneColor(String animation) => switch (animation) {
+      'Lichtwelle' => const Color(0xFFE0F6FF),
+      'Farbwirbel' => const Color(0xFFF3E4FF),
+      'Konfetti-Sprung' => const Color(0xFFFFE8EF),
+      'Goldener Funke' => const Color(0xFFFFF4D8),
+      'Kometenlauf' => const Color(0xFFE8EEFF),
+      _ => const Color(0xFFFFF4D8),
     };
 
 String _randomCompanion(String animal) {
