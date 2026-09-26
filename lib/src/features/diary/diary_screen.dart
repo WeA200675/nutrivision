@@ -5,6 +5,7 @@ import '../stats/goals.dart';
 import '../stats/statistics.dart';
 import '../nutrition/nutrition_catalog.dart';
 import '../nutrition/nutrition_search_screen.dart';
+import '../analysis/mobile_barcode_scanner.dart';
 import 'nutrition_calculator.dart';
 
 class DiaryScreen extends StatefulWidget {
@@ -44,7 +45,7 @@ class _DiaryScreenState extends State<DiaryScreen> {
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(
-          actions: [IconButton(onPressed: _openSearch, icon: const Icon(Icons.search), tooltip: 'Lebensmittel suchen')],
+          actions: [IconButton(onPressed: _openBarcode, icon: const Icon(Icons.qr_code_scanner), tooltip: 'Barcode scannen'), IconButton(onPressed: _openSearch, icon: const Icon(Icons.search), tooltip: 'Lebensmittel suchen')],
           title: const Row(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -159,6 +160,18 @@ class _DiaryScreenState extends State<DiaryScreen> {
         _error = 'Mahlzeit konnte nicht gelöscht werden.';
       });
     }
+  }
+
+  Future<void> _openBarcode() async {
+    final code = await Navigator.push<String>(context, MaterialPageRoute(builder: (_) => const BarcodeCapturePage()));
+    if (code == null || !mounted) return;
+    try {
+      final food = await widget.catalog.findByBarcode(code);
+      if (!mounted) return;
+      if (food == null) { ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Produkt nicht gefunden.'))); return; }
+      final meal = await showDialog<Meal>(context: context, builder: (_) => _FoodPortionDialog(food: food));
+      if (meal != null && mounted) { setState(() => _meals.add(meal)); await widget.repository.save(_meals); }
+    } catch (_) { if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Barcode konnte nicht verarbeitet werden.'))); }
   }
 
   Future<void> _openSearch() async {
