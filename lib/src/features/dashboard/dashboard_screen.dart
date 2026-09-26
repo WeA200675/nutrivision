@@ -22,7 +22,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     appBar: AppBar(title: const Text('🌻 NutriVision')),
     body: GridView.count(crossAxisCount: 2, padding: const EdgeInsets.all(16), crossAxisSpacing: 12, mainAxisSpacing: 12, children: [
       _tile(context, 'Heute', profile == null ? 'Profil einrichten' : '0 / ${profile!.safeDailyCalories.round()} kcal', Icons.local_fire_department, const Color(0xFFFFE0B2), () => Navigator.push(context, MaterialPageRoute(builder: (_) => DiaryScreen(repository: widget.repository, catalog: widget.catalog)))),
-      _tile(context, 'Mein Profil', profile == null ? 'Noch nicht eingerichtet' : 'BMI ${profile!.bmi.toStringAsFixed(1)}', Icons.person, const Color(0xFFD7E8FF), () => Navigator.push(context, MaterialPageRoute(builder: (_) => ProfileScreen(initial: profile, onSaved: (saved) => setState(() => profile = saved))))),
+      _tile(context, 'Mein Profil', profile == null ? 'Noch nicht eingerichtet' : 'BMI ${profile!.bmi.toStringAsFixed(1)}', Icons.person, const Color(0xFFD7E8FF), () => Navigator.push(context, MaterialPageRoute(builder: (_) => ProfileScreen(initial: profile, onSaved: (saved) { setState(() => profile = saved); SharedPreferences.getInstance().then((prefs) => ProfileRepository(prefs).save(saved)); })))),
       _tile(context, 'Wasser', '${water / 1000} / 2,0 l', Icons.water_drop, const Color(0xFFCDEBFF), () => setState(() => water += 250)),
       _tile(context, 'Bewegung', 'Aufgabe des Tages', Icons.directions_walk, const Color(0xFFFFD6E7), () {}),
       _tile(context, 'Lebensmittel', 'Suche und Barcode', Icons.qr_code_scanner, const Color(0xFFE4D8FF), () => Navigator.push(context, MaterialPageRoute(builder: (_) => DiaryScreen(repository: widget.repository, catalog: widget.catalog)))),
