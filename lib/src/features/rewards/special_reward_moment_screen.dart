@@ -33,7 +33,7 @@ class _SpecialRewardMomentScreenState extends State<SpecialRewardMomentScreen>
             return Stack(
               alignment: Alignment.center,
               children: [
-                Positioned.fill(child: CustomPaint(painter: _BurstPainter(_controller.value))),
+                Positioned.fill(child: CustomPaint(painter: _BurstPainter(_controller.value, widget.animation))),
                 Transform.scale(
                   scale: .72 + .28 * t,
                   child: Container(
@@ -89,22 +89,34 @@ String _animalEmoji(String animal) => switch (animal) {
     };
 
 class _BurstPainter extends CustomPainter {
-  const _BurstPainter(this.progress);
+  const _BurstPainter(this.progress, this.animation);
   final double progress;
+  final String animation;
 
   @override
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
-    final paint = Paint()..strokeWidth = 4..strokeCap = StrokeCap.round;
+    final paint = Paint()..strokeWidth = 4..strokeCap = StrokeCap.round..style = PaintingStyle.stroke;
     for (var i = 0; i < 18; i++) {
       final angle = i * 3.14159 * 2 / 18;
-      final radius = 60 + 260 * progress;
+      final radius = 80 + 300 * progress;
       paint.color = Colors.primaries[i % Colors.primaries.length].withValues(alpha: (1 - progress).clamp(.15, .85));
-      canvas.drawLine(center + Offset.fromDirection(angle, 48), center + Offset.fromDirection(angle, radius), paint);
+      if (animation == 'Lichtwelle') {
+        canvas.drawCircle(center, 90 + i * 14 * progress, paint);
+      } else if (animation == 'Farbwirbel') {
+        canvas.drawArc(Rect.fromCircle(center: center, radius: radius * .65), angle, 1.2, false, paint);
+      } else if (animation == 'Konfetti-Sprung') {
+        final dot = center + Offset.fromDirection(angle, radius * .7);
+        paint.style = PaintingStyle.fill;
+        canvas.drawCircle(dot, 5 + (i % 3) * 2, paint);
+        paint.style = PaintingStyle.stroke;
+      } else {
+        canvas.drawLine(center + Offset.fromDirection(angle, 48), center + Offset.fromDirection(angle, radius), paint);
+      }
     }
   }
 
   @override
-  bool shouldRepaint(covariant _BurstPainter oldDelegate) => oldDelegate.progress != progress;
+  bool shouldRepaint(covariant _BurstPainter oldDelegate) => oldDelegate.progress != progress || oldDelegate.animation != animation;
 }
 
