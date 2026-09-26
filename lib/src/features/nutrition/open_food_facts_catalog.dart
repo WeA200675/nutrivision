@@ -32,13 +32,26 @@ class OpenFoodFactsCatalog implements NutritionCatalog {
     final uri = Uri.https(_host, '/api/v2/product/$normalized.json', {
       'fields': 'product_name,nutriments',
     });
-    final response = await _get(uri);
-    if (response['status'] != 1 || response['product'] is! Map) return null;
-    return _parse(response['product'] as Map);
+    try {
+      final response = await _get(uri);
+      if (response['status'] == 1 && response['product'] is Map) return _parse(response['product'] as Map);
+    } catch (_) {
+      // Fall back to the search endpoint; some mirrors do not serve /product reliably.
+    }
+    final fallback = Uri.https(_host, '/cgi/search.pl', {'search_terms': normalized, 'search_simple': '1', 'action': 'process', 'json': '1', 'page_size': '5', 'fields': 'product_name,nutriments'});
+    final data = await _get(fallback);
+    final products = data['products'];
+    if (products is List) {
+      for (final product in products.whereType<Map>()) {
+        final parsed = _parse(product);
+        if (parsed != null) return parsed;
+      }
+    }
+    return null;
   }
 
   Future<Map<String, dynamic>> _get(Uri uri) async {
-    final response = await _client.get(uri, headers: {'User-Agent': 'NutriVision/0.1'}).timeout(const Duration(seconds: 10));
+    final response = await _client.get(uri, headers: {'User-Agent': 'NutriVision/0.1'}).timeout(const Duration(seconds: 20));
     if (response.statusCode != 200) throw NutritionNetworkException(response.statusCode);
     final decoded = jsonDecode(response.body);
     if (decoded is! Map<String, dynamic>) throw const NutritionFormatException();
