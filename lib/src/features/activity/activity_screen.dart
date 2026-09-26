@@ -4,6 +4,7 @@ import 'activity_repository.dart';
 import '../rewards/nutri_world.dart';
 import '../rewards/reward_events.dart';
 import '../rewards/special_reward_moment_screen.dart';
+import '../rewards/activity_moment_screen.dart';
 
 class ActivityScreen extends StatefulWidget {
   const ActivityScreen({super.key, required this.repository});
@@ -18,6 +19,10 @@ class _ActivityScreenState extends State<ActivityScreen> {
   Future<void> _reward() async {
     final prefs = await SharedPreferences.getInstance();
     final result = await RewardService(NutriWorldRepository(prefs)).record(RewardEvent.activityCompleted);
+    if (mounted) {
+      final minutes = tasks.where((task) => task.done).fold<int>(0, (sum, task) => sum + task.minutes);
+      await Navigator.push(context, MaterialPageRoute(builder: (_) => ActivityMomentScreen(minutes: minutes)));
+    }
     if (result.specialMoment && mounted) {
       await Navigator.push(context, MaterialPageRoute(builder: (_) => SpecialRewardMomentScreen(successes: result.successes, animation: result.animation, animal: result.animal)));
     }
