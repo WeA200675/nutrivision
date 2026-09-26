@@ -1,0 +1,27 @@
+import 'package:flutter/material.dart';
+import '../diary/diary_screen.dart';
+import '../nutrition/nutrition_catalog.dart';
+import '../diary/meal_repository.dart';
+import '../profile/profile_screen.dart';
+
+class DashboardScreen extends StatefulWidget {
+  const DashboardScreen({super.key, required this.repository, required this.catalog});
+  final MealRepository repository;
+  final NutritionCatalog catalog;
+  @override State<DashboardScreen> createState() => _DashboardScreenState();
+}
+class _DashboardScreenState extends State<DashboardScreen> {
+  int water = 0;
+  @override Widget build(BuildContext context) => Scaffold(
+    appBar: AppBar(title: const Text('🌻 NutriVision')),
+    body: GridView.count(crossAxisCount: 2, padding: const EdgeInsets.all(16), crossAxisSpacing: 12, mainAxisSpacing: 12, children: [
+      _tile(context, 'Heute', '0 / 2.000 kcal', Icons.local_fire_department, const Color(0xFFFFE0B2), () => Navigator.push(context, MaterialPageRoute(builder: (_) => DiaryScreen(repository: widget.repository, catalog: widget.catalog)))),
+      _tile(context, 'Mein Profil', 'BMI und Ziel', Icons.person, const Color(0xFFD7E8FF), () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ProfileScreen()))),
+      _tile(context, 'Wasser', '${water / 1000} / 2,0 l', Icons.water_drop, const Color(0xFFCDEBFF), () => setState(() => water += 250)),
+      _tile(context, 'Bewegung', 'Aufgabe des Tages', Icons.directions_walk, const Color(0xFFFFD6E7), () {}),
+      _tile(context, 'Lebensmittel', 'Suche und Barcode', Icons.qr_code_scanner, const Color(0xFFE4D8FF), () => Navigator.push(context, MaterialPageRoute(builder: (_) => DiaryScreen(repository: widget.repository, catalog: widget.catalog)))),
+      _tile(context, 'Statistik', 'Dein Fortschritt', Icons.show_chart, const Color(0xFFD7F2D1), () {}),
+    ]),
+  );
+  Widget _tile(BuildContext context, String title, String subtitle, IconData icon, Color color, VoidCallback onTap) => Card(color: color, child: InkWell(onTap: onTap, borderRadius: BorderRadius.circular(12), child: Padding(padding: const EdgeInsets.all(16), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Icon(icon, size: 32, color: Theme.of(context).colorScheme.primary), const Spacer(), Text(title, style: Theme.of(context).textTheme.titleMedium), const SizedBox(height: 4), Text(subtitle)]))));
+}
