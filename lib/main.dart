@@ -5,11 +5,17 @@ import 'src/features/diary/diary_screen.dart';
 import 'src/features/dashboard/dashboard_screen.dart';
 import 'src/features/nutrition/open_food_facts_catalog.dart';
 import 'src/features/nutrition/nutrition_catalog.dart';
+import 'src/features/nutrition/local_food_catalog.dart';
+import 'src/features/nutrition/multi_source_catalog.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final preferences = await SharedPreferences.getInstance();
-  runApp(NutriVisionApp(repository: LocalMealRepository(preferences), catalog: OpenFoodFactsCatalog()));
+  final localCatalog = LocalFoodCatalog(preferences);
+  runApp(NutriVisionApp(
+    repository: LocalMealRepository(preferences),
+    catalog: MultiSourceCatalog(local: localCatalog, remote: OpenFoodFactsCatalog()),
+  ));
 }
 
 class NutriVisionApp extends StatelessWidget {
@@ -59,3 +65,4 @@ class NutriVisionApp extends StatelessWidget {
         home: DashboardScreen(repository: repository, catalog: catalog),
       );
 }
+
