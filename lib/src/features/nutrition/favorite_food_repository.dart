@@ -1,0 +1,2 @@
+import 'package:shared_preferences/shared_preferences.dart';
+class FavoriteFoodRepository { FavoriteFoodRepository(this.preferences); final SharedPreferences preferences; static const key='nutrition.favorites.v1'; Set<String> load()=>preferences.getStringList(key)?.toSet()??{}; Future<void> toggle(String name)async{final values=load();values.contains(name)?values.remove(name):values.add(name);await preferences.setStringList(key,values.toList());} bool contains(String name)=>load().contains(name);}
