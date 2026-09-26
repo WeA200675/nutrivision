@@ -18,13 +18,21 @@ class RewardService {
   static const _animations = ['Sternenregen', 'Konfetti-Sprung', 'Lichtwelle', 'Farbwirbel', 'Goldener Funke', 'Kometenlauf'];
   static const _animals = ['Elefant', 'Giraffe', 'Tiger', 'Kuh', 'Wasserschildkröte'];
 
+  List<String> _animalsFor(RewardEvent event) => switch (event) {
+        RewardEvent.waterLogged => ['Wasserschildkröte', 'Elefant'],
+        RewardEvent.activityCompleted => ['Tiger', 'Giraffe'],
+        RewardEvent.mealLogged || RewardEvent.calorieGoalReached => ['Kuh', 'Elefant'],
+        RewardEvent.recipeCreated => ['Kuh', 'Giraffe'],
+        RewardEvent.foodFavorited || RewardEvent.profileCompleted || RewardEvent.proteinGoalReached => _animals,
+      };
+
   Future<RewardResult> record(RewardEvent event) async {
     await repository.award(event.theme, event.points);
     final current = repository.preferences.getInt(_successKey) ?? 0;
     final successes = current + 1;
     await repository.preferences.setInt(_successKey, successes % 3);
     final history = repository.preferences.getStringList(_historyKey) ?? <String>[];
-    final candidates = [for (final animation in _animations) for (final animal in _animals) '$animation|$animal'];
+    final candidates = [for (final animation in _animations) for (final animal in _animalsFor(event)) '$animation|$animal'];
     final available = candidates.where((key) => !history.contains(key)).toList();
     final selected = (available.isNotEmpty ? available : candidates)[Random().nextInt((available.isNotEmpty ? available : candidates).length)];
     final parts = selected.split('|');
