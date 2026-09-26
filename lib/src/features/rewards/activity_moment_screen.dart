@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 
 class ActivityMomentScreen extends StatefulWidget {
@@ -7,19 +8,21 @@ class ActivityMomentScreen extends StatefulWidget {
 }
 
 class _ActivityMomentScreenState extends State<ActivityMomentScreen> with SingleTickerProviderStateMixin {
-  late final AnimationController controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 1800))..forward();
+  late final AnimationController controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 2400))..repeat();
   @override void dispose() { controller.dispose(); super.dispose(); }
-  @override Widget build(BuildContext context) => Scaffold(backgroundColor: const Color(0xFFFFE8F0), body: SafeArea(child: AnimatedBuilder(animation: controller, builder: (context, _) {
-    final t = Curves.easeOutCubic.transform(controller.value);
+  @override Widget build(BuildContext context) => Scaffold(backgroundColor: const Color(0xFFFFE8F0), body: SafeArea(child: LayoutBuilder(builder: (context, constraints) => AnimatedBuilder(animation: controller, builder: (context, _) {
+    final t = controller.value;
+    final x = -100 + (constraints.maxWidth + 200) * t;
+    final bounce = sin(t * 3.14159 * 8).abs() * 10;
     return Stack(alignment: Alignment.center, children: [
       Positioned.fill(child: CustomPaint(painter: _TrackPainter(t))),
-      Transform.translate(offset: Offset(-140 + 280 * t, -20), child: const Text('🐅', style: TextStyle(fontSize: 122))),
+      Positioned(left: x, top: constraints.maxHeight * .38 - bounce, child: Transform.scale(scale: 1 + sin(t * 3.14159 * 8).abs() * .04, child: const Text('🐅', style: TextStyle(fontSize: 122)))),
       Positioned(top: 150, child: Opacity(opacity: t, child: const Text('Stark bewegt!', style: TextStyle(fontSize: 30, fontWeight: FontWeight.w800, color: Color(0xFF7A2344))))),
       Positioned(bottom: 160, child: Opacity(opacity: t, child: Text('${widget.minutes} Minuten geschafft – genau so weiter.', style: const TextStyle(fontSize: 17, color: Color(0xFF7A2344))))),
       Positioned(bottom: 65, child: FilledButton.icon(onPressed: () => Navigator.pop(context), icon: const Icon(Icons.directions_run), label: const Text('Weiter'))),
       Positioned(top: 36, right: 12, child: TextButton(onPressed: () => Navigator.pop(context), child: const Text('Überspringen'))),
     ]);
-  })));
+  }))));
 }
 
 class _TrackPainter extends CustomPainter {
