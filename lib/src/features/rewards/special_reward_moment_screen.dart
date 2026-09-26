@@ -80,7 +80,7 @@ class _SpecialRewardMomentScreenState extends State<SpecialRewardMomentScreen>
                   child: Opacity(
                     opacity: ((_controller.value - .25) * 1.4).clamp(0, 1),
                     child: Text(
-                      '${widget.animal} feuert dich an: Deine NutriWorld wächst weiter!',
+                      '${widget.animal} feuert dich an: ${_message(widget.animation)}',
                       textAlign: TextAlign.center,
                       style: TextStyle(fontSize: 17, color: Color(0xFF6A4300)),
                     ),
@@ -117,6 +117,15 @@ Color _sceneColor(String animation) => switch (animation) {
       'Goldener Funke' => const Color(0xFFFFF4D8),
       'Kometenlauf' => const Color(0xFFE8EEFF),
       _ => const Color(0xFFFFF4D8),
+    };
+
+String _message(String animation) => switch (animation) {
+      'Lichtwelle' => 'Dein Fortschritt zieht Kreise.',
+      'Farbwirbel' => 'Du bringst richtig Bewegung hinein.',
+      'Konfetti-Sprung' => 'Diesen Erfolg darfst du feiern.',
+      'Goldener Funke' => 'Kleine Schritte, starke Wirkung.',
+      'Kometenlauf' => 'Du bleibst auf deinem Weg.',
+      _ => 'Deine NutriWorld wächst weiter.',
     };
 
 String _randomCompanion(String animal) {
