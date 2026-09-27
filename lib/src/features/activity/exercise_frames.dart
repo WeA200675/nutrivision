@@ -3,18 +3,20 @@ import 'dart:math';
 
 /// Reusable, device-independent animation data. The renderer decides how to draw it.
 class ExerciseFrame {
-  const ExerciseFrame({required this.x, required this.y, required this.scale, required this.rotation});
+  const ExerciseFrame({required this.x, required this.y, required this.scale, required this.rotation, required this.stride});
   final double x;
   final double y;
   final double scale;
   final double rotation;
+  final double stride;
 
-  Map<String, double> toJson() => {'x': x, 'y': y, 'scale': scale, 'rotation': rotation};
+  Map<String, double> toJson() => {'x': x, 'y': y, 'scale': scale, 'rotation': rotation, 'stride': stride};
   factory ExerciseFrame.fromJson(Map value) => ExerciseFrame(
     x: (value['x'] as num?)?.toDouble() ?? 0,
     y: (value['y'] as num?)?.toDouble() ?? 0,
     scale: (value['scale'] as num?)?.toDouble() ?? 1,
     rotation: (value['rotation'] as num?)?.toDouble() ?? 0,
+    stride: (value['stride'] as num?)?.toDouble() ?? 0,
   );
 }
 
@@ -34,7 +36,8 @@ class ExerciseFrameGenerator {
     final sway = cos(t);
     final squat = exercise == 'Kniebeugen' || exercise == 'Wandsitzen' ? pulse.abs() : pulse * .35;
     final side = exercise == 'Seitbeugen' ? pulse * .16 : sway * .04;
-    return ExerciseFrame(x: .5 + sway * .06, y: .56 + squat * .08 + side, scale: 1 + squat * .06, rotation: side);
+    final walkingX = .2 + (index / (frameCount - 1)) * .6;
+    return ExerciseFrame(x: walkingX, y: .56 + squat * .08 + side, scale: 1 + squat * .06, rotation: side, stride: sin(t));
   }
 
   static String encode(List<ExerciseFrame> frames) => jsonEncode(frames.map((frame) => frame.toJson()).toList());
