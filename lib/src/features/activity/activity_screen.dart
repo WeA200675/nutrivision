@@ -7,6 +7,7 @@ import '../rewards/special_reward_moment_screen.dart';
 import '../rewards/activity_moment_screen.dart';
 import 'exercise_planner.dart';
 import 'exercise_frame_view.dart';
+import '../rewards/nutri_world_screen.dart';
 
 class ActivityScreen extends StatefulWidget {
   const ActivityScreen({super.key, required this.repository});
@@ -125,7 +126,28 @@ class _ActivityScreenState extends State<ActivityScreen> {
         ),
       ],
     ),
-    body: ListView(children: [for (var i = 0; i < tasks.length; i++) CheckboxListTile(value: tasks[i].done, onChanged: (_) => toggle(i), title: Text(tasks[i].title), subtitle: Text('${tasks[i].minutes} Minuten'))]),
+    body: ListView(children: [
+      FutureBuilder<SharedPreferences>(
+        future: SharedPreferences.getInstance(),
+        builder: (_, snapshot) {
+          if (!snapshot.hasData) return const SizedBox.shrink();
+          final world = NutriWorldRepository(snapshot.data!).load();
+          final growth = world.garden + world.tree + world.path + world.pond + world.kitchen + world.pantry;
+          return Card(
+            margin: const EdgeInsets.fromLTRB(12, 12, 12, 4),
+            color: const Color(0xFFDFF5E4),
+            child: ListTile(
+              leading: const Text('🌻', style: TextStyle(fontSize: 34)),
+              title: const Text('Deine NutriWorld', style: TextStyle(fontWeight: FontWeight.bold)),
+              subtitle: Text('Wachstum $growth · Bewegungsweg ${world.path}'),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => NutriWorldScreen(repository: NutriWorldRepository(snapshot.data!)))),
+            ),
+          );
+        },
+      ),
+      for (var i = 0; i < tasks.length; i++) CheckboxListTile(value: tasks[i].done, onChanged: (_) => toggle(i), title: Text(tasks[i].title), subtitle: Text('${tasks[i].minutes} Minuten'))
+    ]),
     floatingActionButton: FloatingActionButton.extended(onPressed: add, icon: const Icon(Icons.add), label: const Text('Aktivität')),
   );
 }
