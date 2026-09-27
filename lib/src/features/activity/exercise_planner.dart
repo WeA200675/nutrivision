@@ -23,7 +23,7 @@ class ExercisePlanner {
   ExercisePlanner(this.preferences);
   final SharedPreferences preferences;
   static const _countsKey = 'activity.exercise-counts.v1';
-  static const _plansKey = 'activity.exercise-plans.v2';
+  static const _plansKey = 'activity.exercise-plans.v3';
   static const _framesKey = 'activity.exercise-frames.v1';
   static const exercises = ['Kniebeugen', 'Armheben', 'Ausfallschritte', 'Seitbeugen', 'Balance', 'Schulterkreisen', 'Wasserpaddeln', 'Beinheben', 'Rumpfdrehung', 'Wandsitzen'];
   static const animals = ['Elefantin', 'Tiger', 'Giraffe', 'Kuh', 'Wasserschildkröte'];
