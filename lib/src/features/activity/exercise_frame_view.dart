@@ -23,8 +23,8 @@ class _ExerciseFrameViewState extends State<ExerciseFrameView> with SingleTicker
         final index = (_controller.value * widget.frames.length).floor().clamp(0, widget.frames.length - 1);
         final frame = widget.frames[index];
         return Transform.translate(
-          offset: Offset(frame.x * 8, frame.y * 8),
-          child: Transform.rotate(angle: frame.rotation, child: Transform.scale(scale: frame.scale, child: AnimalMascot(animal: widget.animal))),
+          offset: Offset((frame.x - .5) * 90, (frame.y - .5) * 12),
+          child: Transform.rotate(angle: frame.rotation, child: Transform.scale(scale: frame.scale, child: AnimalMascot(animal: widget.animal, stride: frame.stride))),
         );
       },
     );
