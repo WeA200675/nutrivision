@@ -5,6 +5,7 @@ import '../rewards/nutri_world.dart';
 import '../rewards/reward_events.dart';
 import '../rewards/special_reward_moment_screen.dart';
 import '../rewards/activity_moment_screen.dart';
+import 'exercise_planner.dart';
 
 class ActivityScreen extends StatefulWidget {
   const ActivityScreen({super.key, required this.repository});
@@ -50,7 +51,11 @@ class _ActivityScreenState extends State<ActivityScreen> {
     final wasDone = tasks[i].done;
     final copy = [...tasks]; copy[i] = copy[i].copyWith(done: !wasDone);
     setState(() => tasks = copy); await widget.repository.save(tasks);
-    if (!wasDone) await _reward();
+    if (!wasDone) {
+      final prefs = await SharedPreferences.getInstance();
+      await ExercisePlanner(prefs).record(tasks[i].title);
+      await _reward();
+    }
   }
 
   @override Widget build(BuildContext c) => Scaffold(
