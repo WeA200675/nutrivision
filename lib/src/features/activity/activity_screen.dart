@@ -6,6 +6,7 @@ import '../rewards/reward_events.dart';
 import '../rewards/special_reward_moment_screen.dart';
 import '../rewards/activity_moment_screen.dart';
 import 'exercise_planner.dart';
+import 'exercise_frame_view.dart';
 
 class ActivityScreen extends StatefulWidget {
   const ActivityScreen({super.key, required this.repository});
@@ -85,7 +86,12 @@ class _ActivityScreenState extends State<ActivityScreen> {
             itemBuilder: (_, i) {
               final plan = plans[i];
               return ListTile(
-                leading: Text(_animalEmoji(plan.animal), style: const TextStyle(fontSize: 30)),
+                leading: FutureBuilder<SharedPreferences>(
+                  future: SharedPreferences.getInstance(),
+                  builder: (_, snapshot) => SizedBox(width: 44, height: 44, child: snapshot.hasData
+                    ? ExerciseFrameView(frames: ExercisePlanner(snapshot.data!).loadFrames(plan), emoji: _animalEmoji(plan.animal))
+                    : Text(_animalEmoji(plan.animal), style: const TextStyle(fontSize: 30))),
+                ),
                 title: Text('${plan.animal}: ${plan.exercise}'),
                 subtitle: Text(plan.reason),
               );
