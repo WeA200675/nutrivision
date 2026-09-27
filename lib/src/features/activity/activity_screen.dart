@@ -90,7 +90,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
                 leading: FutureBuilder<SharedPreferences>(
                   future: SharedPreferences.getInstance(),
                   builder: (_, snapshot) => SizedBox(width: 44, height: 44, child: snapshot.hasData
-                    ? ExerciseFrameView(frames: ExercisePlanner(snapshot.data!).loadFrames(plan), emoji: _animalEmoji(plan.animal))
+                    ? ExerciseFrameView(frames: ExercisePlanner(snapshot.data!).loadFrames(plan), emoji: _animalEmoji(plan.animal), animal: plan.animal)
                     : Text(_animalEmoji(plan.animal), style: const TextStyle(fontSize: 30))),
                 ),
                 title: Text('${plan.animal}: ${plan.exercise}'),
