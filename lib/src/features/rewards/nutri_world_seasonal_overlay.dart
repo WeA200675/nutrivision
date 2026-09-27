@@ -1,0 +1,24 @@
+import 'dart:math';
+import 'package:flutter/material.dart';
+
+class NutriWorldSeasonalOverlay extends StatefulWidget {
+  const NutriWorldSeasonalOverlay({super.key});
+  @override State<NutriWorldSeasonalOverlay> createState()=>_NutriWorldSeasonalOverlayState();
+}
+class _NutriWorldSeasonalOverlayState extends State<NutriWorldSeasonalOverlay> with SingleTickerProviderStateMixin {
+  late final AnimationController controller;
+  @override void initState(){super.initState();controller=AnimationController(vsync:this,duration:const Duration(seconds:8))..repeat();}
+  @override void dispose(){controller.dispose();super.dispose();}
+  @override Widget build(BuildContext context)=>IgnorePointer(child:CustomPaint(painter:_SeasonPainter(DateTime.now(),controller),size:Size.infinite));
+}
+class _SeasonPainter extends CustomPainter {
+  _SeasonPainter(this.date,this.animation); final DateTime date; final Animation<double> animation;
+  @override void paint(Canvas c,Size s){final winter=date.month==12||date.month<=2;final autumn=date.month>=10&&date.month<=11;final spring=date.month==3||date.month==4;final christmas=date.month==12;final easter=spring;final p=Paint()..strokeCap=StrokeCap.round;final r=Random(24);
+    if(winter){p.color=Colors.white.withValues(alpha:.75);for(var i=0;i<70;i++){final x=r.nextDouble()*s.width;final y=((r.nextDouble()*s.height)+animation.value*80)%s.height;c.drawCircle(Offset(x,y),1.5+r.nextDouble()*3,p);}}
+    if(autumn){p.color=const Color(0xFFD88945).withValues(alpha:.85);for(var i=0;i<28;i++){final x=(r.nextDouble()*s.width+animation.value*40)%s.width;final y=(r.nextDouble()*s.height+animation.value*50)%s.height;c.drawOval(Rect.fromLTWH(x,y,7,12),p);}}
+    if(!winter){p.color=const Color(0xFF5BA45B).withValues(alpha:.45);for(var i=0;i<45;i++){final x=r.nextDouble()*s.width;final y=s.height*.7+r.nextDouble()*s.height*.25;c.drawLine(Offset(x,y),Offset(x+sin(animation.value*2*pi+i)*5,y-8),p);}}
+    if(christmas){p.color=const Color(0xFFFFD76A);for(var i=0;i<10;i++)c.drawCircle(Offset(80+i*28,110),4,p);}
+    if(easter){p.color=Colors.pinkAccent.withValues(alpha:.9);for(var i=0;i<7;i++)c.drawOval(Rect.fromLTWH(120+i*35,s.height*.72+(i%2)*8,13,19),p);}
+  }
+  @override bool shouldRepaint(covariant _SeasonPainter old)=>true;
+}
