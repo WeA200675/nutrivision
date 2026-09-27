@@ -21,8 +21,8 @@ class _MascotPainter extends CustomPainter {
     canvas.drawOval(const Rect.fromLTWH(32, 10, 9, 13), fill);
     canvas.drawOval(const Rect.fromLTWH(47, 10, 9, 13), fill);
     if (animal == 'Elefantin') { canvas.drawOval(const Rect.fromLTWH(51, 25, 13, 7), fill); }
-    if (animal == 'Tiger') { stroke.color = const Color(0xFF6D3A16); for (var i = 0; i < 3; i++) canvas.drawLine(35 + i * 6, 15, 32 + i * 7, 27, stroke); }
-    if (animal == 'Giraffe') { stroke.color = const Color(0xFFB17728); for (var i = 0; i < 3; i++) canvas.drawCircle(17 + i * 10, 34 + (i % 2) * 8, 3, stroke); }
+    if (animal == 'Tiger') { stroke.color = const Color(0xFF6D3A16); for (var i = 0; i < 3; i++) canvas.drawLine(Offset(35 + i * 6, 15), Offset(32 + i * 7, 27), stroke); }
+    if (animal == 'Giraffe') { stroke.color = const Color(0xFFB17728); for (var i = 0; i < 3; i++) canvas.drawCircle(Offset(17 + i * 10, 34 + (i % 2) * 8), 3, stroke); }
     if (animal == 'Kuh') { fill.color = const Color(0xFF403D47); canvas.drawOval(const Rect.fromLTWH(37, 16, 8, 6), fill); canvas.drawOval(const Rect.fromLTWH(49, 28, 7, 5), fill); }
     fill.color = const Color(0xFF183D35); canvas.drawCircle(const Offset(47, 21), 2, fill); canvas.drawCircle(const Offset(54, 21), 2, fill);
     canvas.drawLine(const Offset(23, 51), const Offset(21, 61), stroke); canvas.drawLine(const Offset(40, 51), const Offset(42, 61), stroke);
