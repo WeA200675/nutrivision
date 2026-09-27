@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:math';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'exercise_frames.dart';
 
 class ExercisePlan {
   const ExercisePlan({required this.animal, required this.exercise, required this.reason});
@@ -22,7 +23,8 @@ class ExercisePlanner {
   ExercisePlanner(this.preferences);
   final SharedPreferences preferences;
   static const _countsKey = 'activity.exercise-counts.v1';
-  static const _plansKey = 'activity.ai-plans.v1';
+  static const _plansKey = 'activity.exercise-plans.v2';
+  static const _framesKey = 'activity.exercise-frames.v1';
   static const exercises = ['Kniebeugen', 'Armheben', 'Ausfallschritte', 'Seitbeugen', 'Balance', 'Schulterkreisen', 'Wasserpaddeln', 'Beinheben', 'Rumpfdrehung', 'Wandsitzen'];
   static const animals = ['Elefantin', 'Tiger', 'Giraffe', 'Kuh', 'Wasserschildkröte'];
 
@@ -47,11 +49,21 @@ class ExercisePlanner {
     try { return (jsonDecode(raw) as List).whereType<Map>().map(ExercisePlan.fromJson).toList(); } catch (_) { return const []; }
   }
 
+  List<ExerciseFrame> loadFrames(ExercisePlan plan) {
+    final raw = preferences.getString('$_framesKey.${plan.animal}.${plan.exercise}');
+    if (raw == null) return const [];
+    return ExerciseFrameGenerator.decode(raw);
+  }
+
   Future<void> _planAllAnimals() async {
     final random = Random();
     final shuffled = [...exercises]..shuffle(random);
-    final plans = [for (var i = 0; i < animals.length; i++) ExercisePlan(animal: animals[i], exercise: shuffled[i % shuffled.length], reason: 'Auswahl aus Fortschritt, Variation und Tierprofil')];
+    final plans = [for (var i = 0; i < animals.length; i++) ExercisePlan(animal: animals[i], exercise: shuffled[i % shuffled.length], reason: 'Zufällige Auswahl aus dem gemeinsamen Übungskatalog')];
     await preferences.setString(_plansKey, jsonEncode(plans.map((plan) => plan.toJson()).toList()));
+    const generator = ExerciseFrameGenerator();
+    for (final plan in plans) {
+      final frames = generator.generate(animal: plan.animal, exercise: plan.exercise);
+      await preferences.setString('$_framesKey.${plan.animal}.${plan.exercise}', ExerciseFrameGenerator.encode(frames));
+    }
   }
 }
-
