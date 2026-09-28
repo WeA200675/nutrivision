@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'nutri_world.dart';
 
 class WorldMemory { const WorldMemory({required this.title,required this.message,required this.createdAt}); final String title,message; final DateTime createdAt; Map<String,String> toJson()=>{'title':title,'message':message,'createdAt':createdAt.toIso8601String()}; factory WorldMemory.fromJson(Map v)=>WorldMemory(title:v['title'] as String? ??'',message:v['message'] as String? ??'',createdAt:DateTime.tryParse(v['createdAt'] as String? ??'')??DateTime.now()); }
 class WorldMemoryRepository {
