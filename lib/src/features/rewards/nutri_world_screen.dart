@@ -27,15 +27,16 @@ class _NutriWorldScreenState extends State<NutriWorldScreen> {
       builder: (context, box) => ClipRect(child: Stack(
         fit: StackFit.expand,
         children: [
-          InteractiveViewer(
-            minScale: .65,
-            maxScale: 4,
-            boundaryMargin: const EdgeInsets.all(180),
-            constrained: false,
-            child: SizedBox(
-              width: 1600,
-              height: 1067,
-              child: Stack(
+          Positioned.fill(
+            child: InteractiveViewer(
+              minScale: .65,
+              maxScale: 4,
+              boundaryMargin: const EdgeInsets.all(180),
+              constrained: false,
+              child: SizedBox(
+                width: 1600,
+                height: 1067,
+                child: Stack(
                 fit: StackFit.expand,
                 children: [
                   Positioned.fill(
@@ -47,6 +48,7 @@ class _NutriWorldScreenState extends State<NutriWorldScreen> {
                   ),
                   Positioned.fill(child: NutriWorldSeasonalOverlay(state: state)),
                 ],
+                ),
               ),
             ),
           ),
