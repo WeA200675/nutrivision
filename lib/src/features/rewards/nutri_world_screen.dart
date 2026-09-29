@@ -3,6 +3,65 @@ import 'nutri_world.dart';
 import 'nutri_world_seasonal_overlay.dart';
 import 'world_memory.dart';
 
-class NutriWorldScreen extends StatefulWidget { const NutriWorldScreen({super.key,required this.repository}); final NutriWorldRepository repository; @override State<NutriWorldScreen> createState()=>_NutriWorldScreenState(); }
-class _NutriWorldScreenState extends State<NutriWorldScreen>{late NutriWorldState state;late String message; @override void initState(){super.initState();state=widget.repository.load();message=WorldMemoryRepository(widget.repository.preferences).messageFor(state);} @override Widget build(BuildContext c)=>Scaffold(appBar:AppBar(title:const Text('Meine NutriWorld')),body:LayoutBuilder(builder:(context,box)=>Stack(fit:StackFit.expand,children:[InteractiveViewer(minScale:1,maxScale:4,boundaryMargin:const EdgeInsets.all(180),constrained:true,child:SizedBox(width:box.maxWidth,height:box.maxHeight,child:Stack(fit:StackFit.expand,children:[Image.asset('assets/world/nutriworld_base.png',fit:BoxFit.cover,errorBuilder:(_,__,___)=>CustomPaint(painter:_WorldPainter(state))),NutriWorldSeasonalOverlay(state:state)]))),Positioned(left:16,right:16,bottom:18,child:Card(color:Colors.white.withValues(alpha:.9),child:Padding(padding:const EdgeInsets.all(14),child:Text(message,style:const TextStyle(fontSize:16,fontWeight:FontWeight.w600))))]))));}
-class _WorldPainter extends CustomPainter{_WorldPainter(this.state);final NutriWorldState state;@override void paint(Canvas c,Size s){final p=Paint()..color=const Color(0xFFBFE8F2);c.drawRect(Offset.zero&s,p);p.color=const Color(0xFFB9E3A3);c.drawOval(const Rect.fromLTWH(-80,220,1360,650),p);p.color=const Color(0xFF8CCB7A);c.drawOval(const Rect.fromLTWH(60,430,1060,500),p);_sun(c,const Offset(1080,90));_pond(c,const Offset(780,485),state.pond);_path(c,state.path);_tree(c,const Offset(230,315),state.tree);_tree(c,const Offset(415,345),state.tree);_garden(c,const Offset(540,585),state.garden);_house(c,const Offset(120,520),state.kitchen,state.pantry);_label(c,'NutriWorld',const Offset(70,90),32,Colors.white);_label(c,'Zoomen und verschieben',const Offset(72,130),18,const Color(0xFF245A4A));}void _sun(Canvas c,Offset o){c.drawCircle(o,52,Paint()..color=const Color(0xFFFFD76A));}void _pond(Canvas c,Offset o,int n){final p=Paint()..color=Color.lerp(const Color(0xFFB9E8EA),const Color(0xFF278FB5),(n/20).clamp(0,1))!;c.drawOval(Rect.fromCenter(center:o,width:260,height:130),p);final f=Paint()..color=Colors.orangeAccent;for(var i=0;i<(n/3).floor().clamp(0,5);i++)c.drawOval(Rect.fromLTWH(o.dx-70+i*32,o.dy-10+(i%2)*25,24,12),f);}void _path(Canvas c,int n){final p=Paint()..color=Color.lerp(const Color(0xFFD9C28A),const Color(0xFF9A6A38),(n/20).clamp(0,1))!..strokeWidth=34..strokeCap=StrokeCap.round;c.drawLine(const Offset(260,700),const Offset(790,515),p);}void _tree(Canvas c,Offset o,int n){final p=Paint()..color=const Color(0xFF70452C);c.drawRect(Rect.fromLTWH(o.dx-10,o.dy+50,20,95),p);p.color=Color.lerp(const Color(0xFFAFCB83),const Color(0xFF2E8B57),(n/20).clamp(0,1))!;final r=35+(n.clamp(0,20)*2);c.drawCircle(Offset(o.dx,o.dy+25),r.toDouble(),p);c.drawCircle(Offset(o.dx-28,o.dy+48),r*.72,p);c.drawCircle(Offset(o.dx+28,o.dy+48),r*.72,p);}void _garden(Canvas c,Offset o,int n){final p=Paint()..color=const Color(0xFF8D5C3D);c.drawOval(Rect.fromCenter(center:o,width:260,height:120),p);final f=Paint()..color=Colors.pinkAccent;for(var i=0;i<(n+2).clamp(2,12);i++)c.drawCircle(Offset(o.dx-90+(i%6)*36,o.dy-25+(i%2)*40),7,f);}void _house(Canvas c,Offset o,int k,int v){final p=Paint()..color=const Color(0xFFFFC987);c.drawRect(Rect.fromLTWH(o.dx,o.dy,190,130),p);p.color=const Color(0xFFBD5D55);final roof=Path()..moveTo(o.dx-20,o.dy)..lineTo(o.dx+95,o.dy-90)..lineTo(o.dx+210,o.dy)..close();c.drawPath(roof,p);p.color=const Color(0xFF8AD0D4);c.drawRect(Rect.fromLTWH(o.dx+28,o.dy+42,42,42),p);p.color=const Color(0xFF6C4B35);c.drawRect(Rect.fromLTWH(o.dx+120,o.dy+58,38,72),p);_label(c,'Küche ${k+v}',Offset(o.dx+15,o.dy+148),16,Colors.white);}void _label(Canvas c,String t,Offset o,double z,Color col){final q=TextPainter(text:TextSpan(text:t,style:TextStyle(fontSize:z,fontWeight:FontWeight.bold,color:col)),textDirection:TextDirection.ltr)..layout();q.paint(c,o);}@override bool shouldRepaint(covariant _WorldPainter o)=>o.state.garden!=state.garden||o.state.tree!=state.tree||o.state.path!=state.path||o.state.pond!=state.pond||o.state.kitchen!=state.kitchen||o.state.pantry!=state.pantry;}
+class NutriWorldScreen extends StatefulWidget {
+  const NutriWorldScreen({super.key, required this.repository});
+  final NutriWorldRepository repository;
+  @override State<NutriWorldScreen> createState() => _NutriWorldScreenState();
+}
+
+class _NutriWorldScreenState extends State<NutriWorldScreen> {
+  late NutriWorldState state;
+  late String message;
+
+  @override
+  void initState() {
+    super.initState();
+    state = widget.repository.load();
+    message = WorldMemoryRepository(widget.repository.preferences).messageFor(state);
+  }
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    appBar: AppBar(title: const Text('Meine NutriWorld')),
+    body: LayoutBuilder(
+      builder: (context, box) => Stack(
+        fit: StackFit.expand,
+        children: [
+          InteractiveViewer(
+            minScale: 1,
+            maxScale: 4,
+            boundaryMargin: const EdgeInsets.all(180),
+            constrained: true,
+            child: SizedBox(
+              width: box.maxWidth,
+              height: box.maxHeight,
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  Image.asset(
+                    'assets/world/nutriworld_base.png',
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => const ColoredBox(color: Color(0xFFBFE8F2)),
+                  ),
+                  NutriWorldSeasonalOverlay(state: state),
+                ],
+              ),
+            ),
+          ),
+          Positioned(
+            left: 16,
+            right: 16,
+            bottom: 18,
+            child: Card(
+              color: Colors.white.withValues(alpha: .9),
+              child: Padding(
+                padding: const EdgeInsets.all(14),
+                child: Text(message, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+              ),
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}
