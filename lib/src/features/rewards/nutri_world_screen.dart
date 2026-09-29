@@ -24,17 +24,17 @@ class _NutriWorldScreenState extends State<NutriWorldScreen> {
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(title: const Text('Meine NutriWorld')),
     body: LayoutBuilder(
-      builder: (context, box) => Stack(
+      builder: (context, box) => ClipRect(child: Stack(
         fit: StackFit.expand,
         children: [
           InteractiveViewer(
-            minScale: 1,
+            minScale: .65,
             maxScale: 4,
             boundaryMargin: const EdgeInsets.all(180),
-            constrained: true,
+            constrained: false,
             child: SizedBox(
-              width: box.maxWidth,
-              height: box.maxHeight,
+              width: 1600,
+              height: 1067,
               child: Stack(
                 fit: StackFit.expand,
                 children: [
@@ -61,7 +61,7 @@ class _NutriWorldScreenState extends State<NutriWorldScreen> {
             ),
           ),
         ],
-      ),
+      )),
     ),
   );
 }
