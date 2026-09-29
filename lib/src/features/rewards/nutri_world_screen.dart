@@ -38,12 +38,14 @@ class _NutriWorldScreenState extends State<NutriWorldScreen> {
               child: Stack(
                 fit: StackFit.expand,
                 children: [
-                  Image.asset(
-                    'assets/world/nutriworld_base.png',
-                    fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => const ColoredBox(color: Color(0xFFBFE8F2)),
+                  Positioned.fill(
+                    child: Image.asset(
+                      'assets/world/nutriworld_base.png',
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) => const ColoredBox(color: Color(0xFFBFE8F2)),
+                    ),
                   ),
-                  NutriWorldSeasonalOverlay(state: state),
+                  Positioned.fill(child: NutriWorldSeasonalOverlay(state: state)),
                 ],
               ),
             ),
