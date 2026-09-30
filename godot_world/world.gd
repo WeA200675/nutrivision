@@ -17,6 +17,7 @@ var ground_material: StandardMaterial3D
 var foliage_materials: Array[StandardMaterial3D] = []
 var pond_material: ShaderMaterial
 var last_season := -1
+var seasonal_particles: CPUParticles3D
 
 func _ready() -> void:
 	rng.seed = 82341
@@ -158,6 +159,27 @@ func _apply_season() -> void:
 	var foliage_color := [Color("#69b85c"), Color("#4e9b55"), Color("#c27a3d"), Color("#d7e3e5")][season]
 	if ground_material: ground_material.albedo_color = ground_color
 	for mat in foliage_materials: mat.albedo_color = foliage_color
+	if seasonal_particles:
+		seasonal_particles.queue_free()
+		seasonal_particles = null
+	if season == 0 or season == 2 or season == 3:
+		seasonal_particles = CPUParticles3D.new()
+		seasonal_particles.amount = 90 if season == 3 else 45
+		seasonal_particles.lifetime = 7.0
+		seasonal_particles.emitting = true
+		seasonal_particles.position = Vector3(0, 7, 0)
+		seasonal_particles.direction = Vector3(0, -1, 0)
+		seasonal_particles.spread = 24.0
+		seasonal_particles.gravity = Vector3(0, -0.35 if season == 3 else -0.08, 0)
+		var particle_mesh := QuadMesh.new()
+		particle_mesh.size = Vector2(0.09 if season == 3 else 0.16, 0.09 if season == 3 else 0.16)
+		seasonal_particles.mesh = particle_mesh
+		var particle_mat := StandardMaterial3D.new()
+		particle_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+		particle_mat.albedo_color = Color("#f4f7ff") if season == 3 else (Color("#d98b3c") if season == 2 else Color("#ffd1e5"))
+		particle_mat.billboard_mode = BaseMaterial3D.BILLBOARD_ENABLED
+		particle_mesh.material = particle_mat
+		add_child(seasonal_particles)
 
 func _add_cloud(pos: Vector3) -> void:
 	var cloud := MeshInstance3D.new()
