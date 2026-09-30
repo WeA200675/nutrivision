@@ -25,6 +25,7 @@ func _ready() -> void:
 	rng.seed = 82341
 	_load_state()
 	_build_environment()
+	_build_cabin()
 	_build_landscape_details()
 	_build_grass()
 	_build_camera()
@@ -121,6 +122,22 @@ func _build_environment() -> void:
 		_add_tree(Vector3(x, 0, -5.0 - (i % 2) * 2.0), 0.85 + (i % 3) * 0.12)
 	for i in 5:
 		_add_cloud(Vector3(-15.0 + i * 7.5, 8.5 + (i % 2), -8.0 - i))
+
+func _build_cabin() -> void:
+	_add_box("Cabin", Vector3(-7.0, 1.0, -1.5), Vector3(4.2, 2.8, 3.2), Color("#d9a66b"))
+	_add_box("CabinDoor", Vector3(-7.0, 0.65, 0.15), Vector3(0.72, 1.45, 0.08), Color("#5a3b2c"))
+	_add_box("CabinWindow", Vector3(-8.15, 1.35, 0.12), Vector3(0.95, 0.72, 0.08), Color("#9dd5df"))
+	_add_box("CabinWindow", Vector3(-5.85, 1.35, 0.12), Vector3(0.95, 0.72, 0.08), Color("#9dd5df"))
+	var roof_a := _add_box("CabinRoof", Vector3(-7.9, 2.65, -1.5), Vector3(3.0, 0.25, 3.8), Color("#8b4e3b"))
+	roof_a.rotation.z = -0.42
+	var roof_b := _add_box("CabinRoof", Vector3(-6.1, 2.65, -1.5), Vector3(3.0, 0.25, 3.8), Color("#8b4e3b"))
+	roof_b.rotation.z = 0.42
+	var lamp := OmniLight3D.new()
+	lamp.position = Vector3(-7.0, 1.8, 0.28)
+	lamp.light_color = Color("#ffd08a")
+	lamp.light_energy = 1.6
+	lamp.omni_range = 4.0
+	add_child(lamp)
 
 func _build_landscape_details() -> void:
 	for i in 7:
