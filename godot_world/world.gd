@@ -105,6 +105,31 @@ func _add_cylinder(label: String, pos: Vector3, size: Vector3, color: Color) -> 
 	node.scale.z = size.z / size.x
 	var mat := StandardMaterial3D.new()
 	mat.albedo_color = color
+	if label == "Pond":
+		mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+		mat.albedo_color = Color(0.08, 0.48, 0.68, 0.84)
+		mat.metallic = 0.12
+		mat.roughness = 0.18
+		var shader := Shader.new()
+		shader.code = """
+		shader_type spatial;
+		render_mode blend_mix, depth_draw_opaque, cull_disabled;
+		uniform vec4 deep_color : source_color = vec4(0.02, 0.25, 0.42, 0.9);
+		uniform vec4 light_color : source_color = vec4(0.35, 0.85, 0.95, 0.5);
+		void fragment() {
+			float wave_a = sin(VERTEX.x * 2.4 + TIME * 1.4) * 0.035;
+			float wave_b = cos(VERTEX.z * 3.1 + TIME * 1.1) * 0.025;
+			float shimmer = pow(max(0.0, sin(VERTEX.x * 5.0 + VERTEX.z * 2.0 + TIME * 2.0)), 12.0);
+			ALBEDO = mix(deep_color.rgb, light_color.rgb, shimmer * 0.35 + wave_a + wave_b);
+			ALPHA = 0.86;
+			ROUGHNESS = 0.12;
+		}
+		"""
+		var shader_material := ShaderMaterial.new()
+		shader_material.shader = shader
+		node.material_override = shader_material
+		add_child(node)
+		return
 	node.material_override = mat
 	add_child(node)
 
