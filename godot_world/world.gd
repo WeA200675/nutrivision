@@ -13,6 +13,10 @@ var dragging := false
 var last_pointer := Vector2.ZERO
 var foliage: Array[Node3D] = []
 var clouds: Array[Node3D] = []
+var ground_material: StandardMaterial3D
+var foliage_materials: Array[StandardMaterial3D] = []
+var pond_material: ShaderMaterial
+var last_season := -1
 
 func _ready() -> void:
 	rng.seed = 82341
@@ -20,6 +24,7 @@ func _ready() -> void:
 	_build_environment()
 	_build_camera()
 	_build_fish(8)
+	_apply_season()
 	set_process(true)
 
 func _process(delta: float) -> void:
@@ -40,6 +45,9 @@ func _process(delta: float) -> void:
 		body.rotation.y = atan2(velocity.x, velocity.z)
 		fish[fish.find(item)] = item
 	_update_camera()
+	var current_season := _season_for_month(Time.get_datetime_dict_from_system().month)
+	if current_season != last_season:
+		_apply_season()
 	var wind := Time.get_ticks_msec() * 0.001
 	for i in foliage.size():
 		foliage[i].rotation.z = sin(wind * 0.8 + i * 0.7) * 0.035
@@ -90,8 +98,10 @@ func _build_environment() -> void:
 	env.environment.ambient_light_color = Color("#fff1db")
 	env.environment.ambient_light_energy = 0.65
 	add_child(env)
-	_add_box("Ground", Vector3(0, -0.75, 0), Vector3(34, 1.0, 24), Color("#78b965"))
-	_add_cylinder("Pond", pond_center, Vector3(7.3, 0.18, 4.5), Color("#3d9fc0"))
+	var ground := _add_box("Ground", Vector3(0, -0.75, 0), Vector3(34, 1.0, 24), Color("#78b965"))
+	ground_material = ground.material_override
+	var pond := _add_cylinder("Pond", pond_center, Vector3(7.3, 0.18, 4.5), Color("#3d9fc0"))
+	pond_material = pond.material_override
 	_add_box("Dock", Vector3(6.2, 0.15, 3.4), Vector3(3.8, 0.22, 1.5), Color("#a8754c"))
 	for i in 10:
 		var x := -13.0 + i * 2.9
@@ -133,6 +143,21 @@ func _add_tree(pos: Vector3, scale_factor: float) -> void:
 	crown.material_override = mat
 	add_child(crown)
 	foliage.append(crown)
+	foliage_materials.append(mat)
+
+func _season_for_month(month: int) -> int:
+	if month in [12, 1, 2]: return 3
+	if month in [3, 4, 5]: return 0
+	if month in [6, 7, 8]: return 1
+	return 2
+
+func _apply_season() -> void:
+	var season := _season_for_month(Time.get_datetime_dict_from_system().month)
+	last_season = season
+	var ground_color := [Color("#9bcf82"), Color("#78b965"), Color("#a88455"), Color("#d9e1e4")][season]
+	var foliage_color := [Color("#69b85c"), Color("#4e9b55"), Color("#c27a3d"), Color("#d7e3e5")][season]
+	if ground_material: ground_material.albedo_color = ground_color
+	for mat in foliage_materials: mat.albedo_color = foliage_color
 
 func _add_cloud(pos: Vector3) -> void:
 	var cloud := MeshInstance3D.new()
@@ -149,7 +174,7 @@ func _add_cloud(pos: Vector3) -> void:
 	add_child(cloud)
 	clouds.append(cloud)
 
-func _add_box(label: String, pos: Vector3, size: Vector3, color: Color) -> void:
+func _add_box(label: String, pos: Vector3, size: Vector3, color: Color) -> MeshInstance3D:
 	var node := MeshInstance3D.new()
 	node.name = label
 	var mesh := BoxMesh.new()
@@ -160,8 +185,9 @@ func _add_box(label: String, pos: Vector3, size: Vector3, color: Color) -> void:
 	mat.albedo_color = color
 	node.material_override = mat
 	add_child(node)
+	return node
 
-func _add_cylinder(label: String, pos: Vector3, size: Vector3, color: Color) -> void:
+func _add_cylinder(label: String, pos: Vector3, size: Vector3, color: Color) -> MeshInstance3D:
 	var node := MeshInstance3D.new()
 	node.name = label
 	var mesh := CylinderMesh.new()
@@ -197,9 +223,10 @@ func _add_cylinder(label: String, pos: Vector3, size: Vector3, color: Color) -> 
 		shader_material.shader = shader
 		node.material_override = shader_material
 		add_child(node)
-		return
+		return node
 	node.material_override = mat
 	add_child(node)
+	return node
 
 func _load_state() -> void:
 	if FileAccess.file_exists(save_path):
