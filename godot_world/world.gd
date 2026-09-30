@@ -188,7 +188,7 @@ func _apply_season() -> void:
 	_apply_health_visuals()
 
 func _apply_health_visuals() -> void:
-	var health := clamp(world_health, 0.0, 1.0)
+	var health: float = clampf(world_health, 0.0, 1.0)
 	if ground_material:
 		ground_material.albedo_color = ground_material.albedo_color.lerp(Color("#8e9690"), (1.0 - health) * 0.55)
 	for mat in foliage_materials:
