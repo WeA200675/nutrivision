@@ -47,6 +47,7 @@ func _process(delta: float) -> void:
 		fish[fish.find(item)] = item
 		body.position.y = -0.05 + sin(Time.get_ticks_msec() * 0.002 + item.phase) * 0.035
 		body.rotation.y = atan2(velocity.x, velocity.z)
+		body.scale.x = 1.0 + sin(Time.get_ticks_msec() * 0.008 + item.phase) * 0.08
 		fish[fish.find(item)] = item
 	_update_camera()
 	var current_season := _season_for_month(Time.get_datetime_dict_from_system().month)
@@ -177,6 +178,24 @@ func _build_fish(count: int) -> void:
 		var mat := StandardMaterial3D.new()
 		mat.albedo_color = Color("#f28c55") if i % 2 == 0 else Color("#e8c35b")
 		fish_body.material_override = mat
+		var tail := MeshInstance3D.new()
+		var tail_mesh := SphereMesh.new()
+		tail_mesh.radius = 0.28
+		tail_mesh.height = 0.42
+		tail.mesh = tail_mesh
+		tail.scale = Vector3(0.18, 0.75, 0.55)
+		tail.position = Vector3(0, 0, -0.38)
+		tail.material_override = mat
+		fish_body.add_child(tail)
+		var fin := MeshInstance3D.new()
+		var fin_mesh := SphereMesh.new()
+		fin_mesh.radius = 0.16
+		fin_mesh.height = 0.28
+		fin.mesh = fin_mesh
+		fin.scale = Vector3(0.16, 0.45, 0.65)
+		fin.position = Vector3(0, 0.18, 0.02)
+		fin.material_override = mat
+		fish_body.add_child(fin)
 		fish_body.position = Vector3(rng.randf_range(-5.5, 5.5), -0.05, rng.randf_range(-3.2, 3.2))
 		add_child(fish_body)
 		fish.append({"body": fish_body, "velocity": Vector3(rng.randf_range(-0.9, 0.9), 0, rng.randf_range(-0.35, 0.35)).normalized() * 0.55, "phase": rng.randf_range(0, 6.28), "turn_time": rng.randf_range(1.4, 4.0)})
