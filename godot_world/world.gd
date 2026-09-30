@@ -138,6 +138,23 @@ func _build_cabin() -> void:
 	lamp.light_energy = 1.6
 	lamp.omni_range = 4.0
 	add_child(lamp)
+	for i in 7:
+		var path := _add_box("Path", Vector3(-6.3 + i * 0.85, -0.1, 1.9 + i * 0.35), Vector3(0.72, 0.12, 0.52), Color("#c7a875"))
+		path.rotation.y = -0.18
+	for i in 5:
+		_add_lantern(Vector3(-2.1 + i * 1.8, 0.25, 2.9))
+	for i in 5:
+		_add_box("FencePost", Vector3(2.0 + i * 0.8, 0.35, 3.6), Vector3(0.12, 0.7, 0.12), Color("#79523b"))
+	_add_box("FenceRail", Vector3(3.6, 0.55, 3.6), Vector3(4.0, 0.12, 0.12), Color("#79523b"))
+
+func _add_lantern(pos: Vector3) -> void:
+	var post := _add_cylinder("LanternPost", pos + Vector3(0, 0.45, 0), Vector3(0.06, 0.9, 0.06), Color("#493c35"))
+	var light := OmniLight3D.new()
+	light.position = pos + Vector3(0, 0.95, 0)
+	light.light_color = Color("#ffd48b")
+	light.light_energy = 0.55
+	light.omni_range = 2.2
+	add_child(light)
 
 func _build_landscape_details() -> void:
 	for i in 7:
