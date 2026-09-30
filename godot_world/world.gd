@@ -71,7 +71,7 @@ func _input(event: InputEvent) -> void:
 		elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
 			camera.position *= 1.08
 	elif event is InputEventMouseMotion and dragging:
-		var motion := event.relative
+		var motion: Vector2 = event.relative
 		camera_yaw -= motion.x * 0.006
 		camera_pitch = clamp(camera_pitch - motion.y * 0.004, -1.0, -0.12)
 	elif event is InputEventScreenTouch:
