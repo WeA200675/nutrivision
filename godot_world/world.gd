@@ -24,6 +24,7 @@ func _ready() -> void:
 	rng.seed = 82341
 	_load_state()
 	_build_environment()
+	_build_landscape_details()
 	_build_camera()
 	_build_fish(8)
 	_apply_season()
@@ -101,6 +102,9 @@ func _build_environment() -> void:
 	env.environment.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
 	env.environment.ambient_light_color = Color("#fff1db")
 	env.environment.ambient_light_energy = 0.65
+	env.environment.fog_enabled = true
+	env.environment.fog_light_color = Color("#acd9e6")
+	env.environment.fog_density = 0.006
 	add_child(env)
 	var ground := _add_box("Ground", Vector3(0, -0.75, 0), Vector3(34, 1.0, 24), Color("#78b965"))
 	ground_material = ground.material_override
@@ -112,6 +116,49 @@ func _build_environment() -> void:
 		_add_tree(Vector3(x, 0, -5.0 - (i % 2) * 2.0), 0.85 + (i % 3) * 0.12)
 	for i in 5:
 		_add_cloud(Vector3(-15.0 + i * 7.5, 8.5 + (i % 2), -8.0 - i))
+
+func _build_landscape_details() -> void:
+	for i in 7:
+		var hill := MeshInstance3D.new()
+		var hill_mesh := SphereMesh.new()
+		hill_mesh.radius = 3.2 + (i % 3) * 0.8
+		hill_mesh.height = 2.2
+		hill.mesh = hill_mesh
+		hill.scale = Vector3(1.7, 0.55, 1.1)
+		hill.position = Vector3(-13.0 + i * 4.4, -0.25, -9.0 - (i % 2) * 1.8)
+		var hill_mat := StandardMaterial3D.new()
+		hill_mat.albedo_color = Color("#6fa85d")
+		hill.material_override = hill_mat
+		add_child(hill)
+	for i in 14:
+		var angle := float(i) / 14.0 * TAU
+		var rock_pos := Vector3(cos(angle) * 6.4, 0.0, sin(angle) * 3.8)
+		_add_rock(rock_pos, 0.35 + float(i % 3) * 0.12)
+	for i in 28:
+		var flower := MeshInstance3D.new()
+		var flower_mesh := SphereMesh.new()
+		flower_mesh.radius = 0.08
+		flower_mesh.height = 0.16
+		flower.mesh = flower_mesh
+		flower.position = Vector3(-9.0 + (i * 1.37) % 18.0, 0.15, 2.0 + (i * 0.83) % 7.0)
+		var flower_mat := StandardMaterial3D.new()
+		flower_mat.albedo_color = Color("#e889a8") if i % 2 == 0 else Color("#f3d45d")
+		flower.material_override = flower_mat
+		add_child(flower)
+
+func _add_rock(pos: Vector3, scale_factor: float) -> void:
+	var rock := MeshInstance3D.new()
+	var mesh := SphereMesh.new()
+	mesh.radius = scale_factor
+	mesh.height = scale_factor * 0.8
+	rock.mesh = mesh
+	rock.position = pos + Vector3(0, scale_factor * 0.25, 0)
+	rock.rotation.y = rng.randf_range(0, TAU)
+	var mat := StandardMaterial3D.new()
+	mat.albedo_color = Color("#777a70")
+	mat.roughness = 0.95
+	rock.material_override = mat
+	add_child(rock)
 
 func _build_camera() -> void:
 	camera = Camera3D.new()
