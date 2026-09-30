@@ -179,7 +179,7 @@ func _build_landscape_details() -> void:
 		flower_mesh.radius = 0.08
 		flower_mesh.height = 0.16
 		flower.mesh = flower_mesh
-		flower.position = Vector3(-9.0 + (i * 1.37) % 18.0, 0.15, 2.0 + (i * 0.83) % 7.0)
+		flower.position = Vector3(-9.0 + fmod(float(i) * 1.37, 18.0), 0.15, 2.0 + fmod(float(i) * 0.83, 7.0))
 		var flower_mat := StandardMaterial3D.new()
 		flower_mat.albedo_color = Color("#e889a8") if i % 2 == 0 else Color("#f3d45d")
 		flower.material_override = flower_mat
