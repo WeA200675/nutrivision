@@ -156,10 +156,12 @@ func _season_for_month(month: int) -> int:
 	return 2
 
 func _apply_season() -> void:
-	var season := _season_for_month(Time.get_datetime_dict_from_system().month)
+	var season: int = _season_for_month(Time.get_datetime_dict_from_system().month)
 	last_season = season
-	var ground_color := [Color("#9bcf82"), Color("#78b965"), Color("#a88455"), Color("#d9e1e4")][season]
-	var foliage_color := [Color("#69b85c"), Color("#4e9b55"), Color("#c27a3d"), Color("#d7e3e5")][season]
+	var ground_colors: Array[Color] = [Color("#9bcf82"), Color("#78b965"), Color("#a88455"), Color("#d9e1e4")]
+	var foliage_colors: Array[Color] = [Color("#69b85c"), Color("#4e9b55"), Color("#c27a3d"), Color("#d7e3e5")]
+	var ground_color: Color = ground_colors[season]
+	var foliage_color: Color = foliage_colors[season]
 	if ground_material: ground_material.albedo_color = ground_color
 	for mat in foliage_materials: mat.albedo_color = foliage_color
 	if seasonal_particles:
