@@ -11,6 +11,8 @@ var camera_yaw := 0.0
 var camera_pitch := -0.42
 var dragging := false
 var last_pointer := Vector2.ZERO
+var foliage: Array[Node3D] = []
+var clouds: Array[Node3D] = []
 
 func _ready() -> void:
 	rng.seed = 82341
@@ -38,6 +40,14 @@ func _process(delta: float) -> void:
 		body.rotation.y = atan2(velocity.x, velocity.z)
 		fish[fish.find(item)] = item
 	_update_camera()
+	var wind := Time.get_ticks_msec() * 0.001
+	for i in foliage.size():
+		foliage[i].rotation.z = sin(wind * 0.8 + i * 0.7) * 0.035
+		foliage[i].position.x += sin(wind * 0.45 + i) * 0.0008
+	for cloud in clouds:
+		cloud.position.x += delta * 0.18
+		if cloud.position.x > 19.0:
+			cloud.position.x = -19.0
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:
@@ -86,6 +96,8 @@ func _build_environment() -> void:
 	for i in 10:
 		var x := -13.0 + i * 2.9
 		_add_tree(Vector3(x, 0, -5.0 - (i % 2) * 2.0), 0.85 + (i % 3) * 0.12)
+	for i in 5:
+		_add_cloud(Vector3(-15.0 + i * 7.5, 8.5 + (i % 2), -8.0 - i))
 
 func _build_camera() -> void:
 	camera = Camera3D.new()
@@ -120,6 +132,22 @@ func _add_tree(pos: Vector3, scale_factor: float) -> void:
 	mat.albedo_color = Color("#4e9b55")
 	crown.material_override = mat
 	add_child(crown)
+	foliage.append(crown)
+
+func _add_cloud(pos: Vector3) -> void:
+	var cloud := MeshInstance3D.new()
+	var mesh := SphereMesh.new()
+	mesh.radius = 1.5
+	mesh.height = 1.1
+	cloud.mesh = mesh
+	cloud.position = pos
+	cloud.scale = Vector3(2.5, 0.65, 1.0)
+	var mat := StandardMaterial3D.new()
+	mat.albedo_color = Color(0.96, 0.98, 1.0, 0.78)
+	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	cloud.material_override = mat
+	add_child(cloud)
+	clouds.append(cloud)
 
 func _add_box(label: String, pos: Vector3, size: Vector3, color: Color) -> void:
 	var node := MeshInstance3D.new()
