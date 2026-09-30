@@ -84,8 +84,8 @@ func _input(event: InputEvent) -> void:
 func _update_camera() -> void:
 	if camera == null:
 		return
-	var distance := clamp(camera.position.distance_to(Vector3.ZERO), 8.0, 28.0)
-	var offset := Vector3(sin(camera_yaw) * cos(camera_pitch), -sin(camera_pitch), cos(camera_yaw) * cos(camera_pitch)) * distance
+	var distance: float = clampf(camera.position.distance_to(Vector3.ZERO), 8.0, 28.0)
+	var offset: Vector3 = Vector3(sin(camera_yaw) * cos(camera_pitch), -sin(camera_pitch), cos(camera_yaw) * cos(camera_pitch)) * distance
 	camera.position = offset
 	camera.look_at(Vector3(0, 0, 0))
 
