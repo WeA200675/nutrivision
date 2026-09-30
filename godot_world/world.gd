@@ -18,6 +18,7 @@ var foliage_materials: Array[StandardMaterial3D] = []
 var pond_material: ShaderMaterial
 var last_season := -1
 var seasonal_particles: CPUParticles3D
+var health_label: Label
 
 func _ready() -> void:
 	rng.seed = 82341
@@ -26,6 +27,7 @@ func _ready() -> void:
 	_build_camera()
 	_build_fish(8)
 	_apply_season()
+	_build_hud()
 	set_process(true)
 
 func _process(delta: float) -> void:
@@ -49,6 +51,7 @@ func _process(delta: float) -> void:
 	var current_season := _season_for_month(Time.get_datetime_dict_from_system().month)
 	if current_season != last_season:
 		_apply_season()
+	_apply_health_visuals()
 	var wind := Time.get_ticks_msec() * 0.001
 	for i in foliage.size():
 		foliage[i].rotation.z = sin(wind * 0.8 + i * 0.7) * 0.035
@@ -180,6 +183,30 @@ func _apply_season() -> void:
 		particle_mat.billboard_mode = BaseMaterial3D.BILLBOARD_ENABLED
 		particle_mesh.material = particle_mat
 		add_child(seasonal_particles)
+	_apply_health_visuals()
+
+func _apply_health_visuals() -> void:
+	var health := clamp(world_health, 0.0, 1.0)
+	if ground_material:
+		ground_material.albedo_color = ground_material.albedo_color.lerp(Color("#8e9690"), (1.0 - health) * 0.55)
+	for mat in foliage_materials:
+		mat.albedo_color = mat.albedo_color.lerp(Color("#7e877d"), (1.0 - health) * 0.62)
+	if health_label:
+		health_label.text = "NutriWorld  •  Lebensenergie %d%%" % int(health * 100.0)
+
+func _build_hud() -> void:
+	var layer := CanvasLayer.new()
+	add_child(layer)
+	health_label = Label.new()
+	health_label.position = Vector2(24, 20)
+	health_label.add_theme_font_size_override("font_size", 20)
+	health_label.add_theme_color_override("font_color", Color("#173b35"))
+	layer.add_child(health_label)
+
+func set_world_health(value: float) -> void:
+	world_health = clamp(value, 0.0, 1.0)
+	_apply_health_visuals()
+	save_world_state()
 
 func _add_cloud(pos: Vector3) -> void:
 	var cloud := MeshInstance3D.new()
