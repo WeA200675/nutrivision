@@ -7,6 +7,10 @@ var pond_size := Vector2(13.0, 8.0)
 var rng := RandomNumberGenerator.new()
 var world_health := 0.72
 var save_path := "user://nutriworld_state.json"
+var camera_yaw := 0.0
+var camera_pitch := -0.42
+var dragging := false
+var last_pointer := Vector2.ZERO
 
 func _ready() -> void:
 	rng.seed = 82341
@@ -20,12 +24,48 @@ func _process(delta: float) -> void:
 	for item in fish:
 		var body: MeshInstance3D = item.body
 		var velocity: Vector3 = item.velocity
+		item.turn_time -= delta
+		if item.turn_time <= 0.0:
+			item.velocity = Vector3(rng.randf_range(-0.9, 0.9), 0, rng.randf_range(-0.45, 0.45)).normalized() * rng.randf_range(0.35, 0.9)
+			item.turn_time = rng.randf_range(1.4, 4.0)
+			velocity = item.velocity
 		body.position += velocity * delta
 		if abs(body.position.x - pond_center.x) > pond_size.x * 0.5 or abs(body.position.z - pond_center.z) > pond_size.y * 0.5:
 			item.velocity = -velocity
 			item.body.rotation.y += PI
 		fish[fish.find(item)] = item
 		body.position.y = -0.05 + sin(Time.get_ticks_msec() * 0.002 + item.phase) * 0.035
+		body.rotation.y = atan2(velocity.x, velocity.z)
+		fish[fish.find(item)] = item
+	_update_camera()
+
+func _input(event: InputEvent) -> void:
+	if event is InputEventMouseButton:
+		if event.button_index == MOUSE_BUTTON_LEFT:
+			dragging = event.pressed
+			last_pointer = event.position
+		elif event.button_index == MOUSE_BUTTON_WHEEL_UP:
+			camera.position *= 0.92
+		elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
+			camera.position *= 1.08
+	elif event is InputEventMouseMotion and dragging:
+		var motion := event.relative
+		camera_yaw -= motion.x * 0.006
+		camera_pitch = clamp(camera_pitch - motion.y * 0.004, -1.0, -0.12)
+	elif event is InputEventScreenTouch:
+		dragging = event.pressed
+		last_pointer = event.position
+	elif event is InputEventScreenDrag and dragging:
+		camera_yaw -= event.relative.x * 0.006
+		camera_pitch = clamp(camera_pitch - event.relative.y * 0.004, -1.0, -0.12)
+
+func _update_camera() -> void:
+	if camera == null:
+		return
+	var distance := clamp(camera.position.distance_to(Vector3.ZERO), 8.0, 28.0)
+	var offset := Vector3(sin(camera_yaw) * cos(camera_pitch), -sin(camera_pitch), cos(camera_yaw) * cos(camera_pitch)) * distance
+	camera.position = offset
+	camera.look_at(Vector3(0, 0, 0))
 
 func _build_environment() -> void:
 	var sun := DirectionalLight3D.new()
@@ -66,7 +106,7 @@ func _build_fish(count: int) -> void:
 		fish_body.material_override = mat
 		fish_body.position = Vector3(rng.randf_range(-5.5, 5.5), -0.05, rng.randf_range(-3.2, 3.2))
 		add_child(fish_body)
-		fish.append({"body": fish_body, "velocity": Vector3(rng.randf_range(-0.9, 0.9), 0, rng.randf_range(-0.35, 0.35)), "phase": rng.randf_range(0, 6.28)})
+		fish.append({"body": fish_body, "velocity": Vector3(rng.randf_range(-0.9, 0.9), 0, rng.randf_range(-0.35, 0.35)).normalized() * 0.55, "phase": rng.randf_range(0, 6.28), "turn_time": rng.randf_range(1.4, 4.0)})
 
 func _add_tree(pos: Vector3, scale_factor: float) -> void:
 	_add_cylinder("Trunk", pos + Vector3(0, 1.0, 0), Vector3(0.28, 2.0, 0.28), Color("#70452e"))
