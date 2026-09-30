@@ -15,6 +15,7 @@ var foliage: Array[Node3D] = []
 var clouds: Array[Node3D] = []
 var ground_material: StandardMaterial3D
 var foliage_materials: Array[StandardMaterial3D] = []
+var grass: Array[Node3D] = []
 var pond_material: ShaderMaterial
 var last_season := -1
 var seasonal_particles: CPUParticles3D
@@ -25,6 +26,7 @@ func _ready() -> void:
 	_load_state()
 	_build_environment()
 	_build_landscape_details()
+	_build_grass()
 	_build_camera()
 	_build_fish(8)
 	_apply_season()
@@ -58,6 +60,8 @@ func _process(delta: float) -> void:
 	for i in foliage.size():
 		foliage[i].rotation.z = sin(wind * 0.8 + i * 0.7) * 0.035
 		foliage[i].position.x += sin(wind * 0.45 + i) * 0.0008
+	for i in grass.size():
+		grass[i].rotation.z = sin(wind * 1.7 + i * 0.31) * 0.12
 	for cloud in clouds:
 		cloud.position.x += delta * 0.18
 		if cloud.position.x > 19.0:
@@ -146,6 +150,19 @@ func _build_landscape_details() -> void:
 		flower_mat.albedo_color = Color("#e889a8") if i % 2 == 0 else Color("#f3d45d")
 		flower.material_override = flower_mat
 		add_child(flower)
+
+func _build_grass() -> void:
+	for i in 75:
+		var blade := MeshInstance3D.new()
+		var blade_mesh := BoxMesh.new()
+		blade_mesh.size = Vector3(0.035, 0.38 + float(i % 4) * 0.05, 0.035)
+		blade.mesh = blade_mesh
+		blade.position = Vector3(-14.0 + float((i * 17) % 280) / 10.0, 0.18, 1.0 + float((i * 13) % 70) / 10.0)
+		var blade_mat := StandardMaterial3D.new()
+		blade_mat.albedo_color = Color("#3f8c4d") if i % 2 == 0 else Color("#5da557")
+		blade.material_override = blade_mat
+		add_child(blade)
+		grass.append(blade)
 
 func _add_rock(pos: Vector3, scale_factor: float) -> void:
 	var rock := MeshInstance3D.new()
