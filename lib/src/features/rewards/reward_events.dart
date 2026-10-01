@@ -1,0 +1,53 @@
+import 'nutri_world.dart';
+import 'dart:math';
+enum RewardEvent { mealLogged, waterLogged, activityCompleted, recipeCreated, foodFavorited, profileCompleted, calorieGoalReached, proteinGoalReached }
+extension RewardEventMapping on RewardEvent { WorldTheme get theme => switch(this){RewardEvent.mealLogged=>WorldTheme.garden,RewardEvent.waterLogged=>WorldTheme.pond,RewardEvent.activityCompleted=>WorldTheme.path,RewardEvent.recipeCreated=>WorldTheme.kitchen,RewardEvent.foodFavorited=>WorldTheme.pantry,RewardEvent.profileCompleted=>WorldTheme.tree,RewardEvent.calorieGoalReached=>WorldTheme.garden,RewardEvent.proteinGoalReached=>WorldTheme.tree}; int get points => switch(this){RewardEvent.calorieGoalReached=>3,RewardEvent.proteinGoalReached=>2,_=>1}; }
+class RewardResult {
+  const RewardResult({required this.successes, required this.specialMoment, this.animation = 'Sternenregen', this.animal = 'Elefant'});
+  final int successes;
+  final bool specialMoment;
+  final String animation;
+  final String animal;
+}
+
+class RewardService {
+  const RewardService(this.repository);
+  final NutriWorldRepository repository;
+  static const _successKey = 'nutri-world.successes.v1';
+  static const _historyKey = 'nutri-world.reward-history.v1';
+  static const _preparedKey = 'nutri-world.prepared-reward.v1';
+  static const _animations = ['Sternenregen', 'Konfetti-Sprung', 'Lichtwelle', 'Farbwirbel', 'Goldener Funke', 'Kometenlauf'];
+  static const _animals = ['Elefant', 'Giraffe', 'Tiger', 'Kuh', 'Wasserschildkröte'];
+
+  List<String> _animalsFor(RewardEvent event) => switch (event) {
+        RewardEvent.waterLogged => ['Wasserschildkröte', 'Elefant'],
+        RewardEvent.activityCompleted => ['Tiger', 'Giraffe'],
+        RewardEvent.mealLogged || RewardEvent.calorieGoalReached => ['Kuh', 'Elefant'],
+        RewardEvent.recipeCreated => ['Kuh', 'Giraffe'],
+        RewardEvent.foodFavorited || RewardEvent.profileCompleted || RewardEvent.proteinGoalReached => _animals,
+      };
+
+  Future<RewardResult> record(RewardEvent event) async {
+    await repository.award(event.theme, event.points);
+    final current = repository.preferences.getInt(_successKey) ?? 0;
+    final successes = current + 1;
+    await repository.preferences.setInt(_successKey, successes % 3);
+    final history = repository.preferences.getStringList(_historyKey) ?? <String>[];
+    final candidates = [for (final animation in _animations) for (final animal in _animalsFor(event)) '$animation|$animal'];
+    final available = candidates.where((key) => !history.contains(key)).toList();
+    final prepared = repository.preferences.getString(_preparedKey);
+    final pool = available.isNotEmpty ? available : candidates;
+    final selected = prepared != null && pool.contains(prepared)
+        ? prepared
+        : pool[Random().nextInt(pool.length)];
+    final parts = selected.split('|');
+    // Jede vorbereitete Kombination wird einmal gezeigt, bevor der Katalog neu startet.
+    final nextHistory = available.isEmpty ? <String>[selected] : [...history, selected];
+    await repository.preferences.setStringList(_historyKey, nextHistory);
+    final nextPool = candidates.where((key) => !nextHistory.contains(key)).toList();
+    final nextPrepared = (nextPool.isNotEmpty ? nextPool : candidates)[Random().nextInt((nextPool.isNotEmpty ? nextPool : candidates).length)];
+    await repository.preferences.setString(_preparedKey, nextPrepared);
+    return RewardResult(successes: successes, specialMoment: successes % 3 == 0, animation: parts[0], animal: parts[1]);
+  }
+}
+
