@@ -147,6 +147,8 @@ func _build_environment() -> void:
 	sun_light = sun
 	sun.rotation_degrees = Vector3(-52, -28, 0)
 	sun.light_energy = 1.15
+	sun.shadow_enabled = true
+	sun.directional_shadow_max_distance = 45.0
 	add_child(sun)
 	moon_light = DirectionalLight3D.new()
 	moon_light.light_color = Color("#b7c9ff")
@@ -217,6 +219,13 @@ func _build_environment() -> void:
 	env.environment.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
 	env.environment.ambient_light_color = Color("#fff1db")
 	env.environment.ambient_light_energy = 0.65
+	env.environment.tonemap_mode = Environment.TONE_MAPPER_FILMIC
+	env.environment.glow_enabled = true
+	env.environment.glow_intensity = 0.7
+	env.environment.glow_strength = 0.8
+	env.environment.ssil_enabled = true
+	env.environment.ssil_radius = 2.5
+	env.environment.ssil_strength = 1.15
 	env.environment.fog_enabled = true
 	env.environment.fog_light_color = Color("#acd9e6")
 	env.environment.fog_density = 0.006
