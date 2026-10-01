@@ -323,7 +323,9 @@ func _apply_season() -> void:
 		particle_mesh.material = particle_mat
 		add_child(seasonal_particles)
 	if chimney_smoke:
-		chimney_smoke.emitting = season == 3
+		var month: int = Time.get_datetime_dict_from_system().month
+		var cold_weather := month >= 10 or month <= 3
+		chimney_smoke.emitting = cold_weather
 	_apply_health_visuals()
 
 func _apply_health_visuals() -> void:
