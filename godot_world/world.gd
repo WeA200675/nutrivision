@@ -30,6 +30,8 @@ var moon_light: DirectionalLight3D
 var stars: Array[Node3D] = []
 var fireflies: Array[Node3D] = []
 var butterflies: Array[Node3D] = []
+var imported_trees_loaded := false
+var imported_building_loaded := false
 
 func _ready() -> void:
 	rng.seed = 82341
@@ -224,15 +226,18 @@ func _build_environment() -> void:
 	var pond := _add_cylinder("Pond", pond_center, Vector3(7.3, 0.18, 4.5), Color("#3d9fc0"))
 	pond_material = pond.material_override
 	_add_box("Dock", Vector3(6.2, 0.15, 3.4), Vector3(3.8, 0.22, 1.5), Color("#a8754c"))
-	for i in 10:
-		var x := -13.0 + i * 2.9
-		_add_tree(Vector3(x, 0, -5.0 - (i % 2) * 2.0), 0.85 + (i % 3) * 0.12)
 	_add_imported_nature_models()
 	_add_imported_building()
+	if not imported_trees_loaded:
+		for i in 10:
+			var x := -13.0 + i * 2.9
+			_add_tree(Vector3(x, 0, -5.0 - (i % 2) * 2.0), 0.85 + (i % 3) * 0.12)
 	for i in 5:
 		_add_cloud(Vector3(-15.0 + i * 7.5, 8.5 + (i % 2), -8.0 - i))
 
 func _build_cabin() -> void:
+	if imported_building_loaded:
+		return
 	_add_box("Cabin", Vector3(-7.0, 1.0, -1.5), Vector3(4.2, 2.8, 3.2), Color("#d9a66b"))
 	_add_box("CabinDoor", Vector3(-7.0, 0.65, 0.15), Vector3(0.72, 1.45, 0.08), Color("#5a3b2c"))
 	_add_box("CabinWindow", Vector3(-8.15, 1.35, 0.12), Vector3(0.95, 0.72, 0.08), Color("#9dd5df"))
@@ -319,6 +324,7 @@ func _add_imported_nature_models() -> void:
 	var tree_scene: PackedScene = load(tree_path) as PackedScene
 	var rock_scene: PackedScene = load(rock_path) as PackedScene
 	if tree_scene is PackedScene:
+		imported_trees_loaded = true
 		for i in 5:
 			var tree := tree_scene.instantiate()
 			tree.position = Vector3(-11.0 + i * 5.2, 0, -7.0)
@@ -336,6 +342,7 @@ func _add_imported_building() -> void:
 	var wall_scene: PackedScene = load("res://assets/imported/kenney_building/Models/GLB format/wall-window-square-detailed.glb") as PackedScene
 	var roof_scene: PackedScene = load("res://assets/imported/kenney_building/Models/GLB format/roof-flat-square.glb") as PackedScene
 	var door_scene: PackedScene = load("res://assets/imported/kenney_building/Models/GLB format/door-rotate-square-a.glb") as PackedScene
+	imported_building_loaded = wall_scene is PackedScene and roof_scene is PackedScene and door_scene is PackedScene
 	if wall_scene is PackedScene:
 		for data in [[Vector3(-7.0, 1.0, -3.0), 0.0], [Vector3(-7.0, 1.0, 0.0), 0.0], [Vector3(-9.1, 1.0, -1.5), PI * 0.5], [Vector3(-4.9, 1.0, -1.5), PI * 0.5]]:
 			var wall := wall_scene.instantiate()
