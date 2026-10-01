@@ -11,6 +11,8 @@ var camera_yaw := 0.0
 var camera_pitch := -0.42
 var dragging := false
 var last_pointer := Vector2.ZERO
+var touch_points: Dictionary = {}
+var pinch_distance := 0.0
 var foliage: Array[Node3D] = []
 var clouds: Array[Node3D] = []
 var ground_material: StandardMaterial3D
@@ -108,11 +110,26 @@ func _input(event: InputEvent) -> void:
 		camera_yaw -= motion.x * 0.006
 		camera_pitch = clamp(camera_pitch - motion.y * 0.004, -1.0, -0.12)
 	elif event is InputEventScreenTouch:
-		dragging = event.pressed
-		last_pointer = event.position
+		if event.pressed:
+			touch_points[event.index] = event.position
+		else:
+			touch_points.erase(event.index)
+		dragging = touch_points.size() == 1
+		if touch_points.size() == 2:
+			var points: Array = touch_points.values()
+			pinch_distance = points[0].distance_to(points[1])
 	elif event is InputEventScreenDrag and dragging:
-		camera_yaw -= event.relative.x * 0.006
-		camera_pitch = clamp(camera_pitch - event.relative.y * 0.004, -1.0, -0.12)
+		if touch_points.has(event.index):
+			touch_points[event.index] = event.position
+		if touch_points.size() == 2:
+			var points: Array = touch_points.values()
+			var next_distance: float = points[0].distance_to(points[1])
+			if pinch_distance > 0.0:
+				camera.position *= clampf(1.0 - (next_distance - pinch_distance) * 0.002, 0.88, 1.12)
+			pinch_distance = next_distance
+		else:
+			camera_yaw -= event.relative.x * 0.006
+			camera_pitch = clamp(camera_pitch - event.relative.y * 0.004, -1.0, -0.12)
 
 func _update_camera() -> void:
 	if camera == null:
