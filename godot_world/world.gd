@@ -25,6 +25,7 @@ var sun_light: DirectionalLight3D
 var moon_node: MeshInstance3D
 var moon_light: DirectionalLight3D
 var stars: Array[Node3D] = []
+var fireflies: Array[Node3D] = []
 
 func _ready() -> void:
 	rng.seed = 82341
@@ -75,6 +76,9 @@ func _process(delta: float) -> void:
 			moon_light.light_energy = 0.22 * night_factor
 		for star in stars:
 			star.visible = night_factor > 0.32
+		for i in fireflies.size():
+			fireflies[i].visible = night_factor > 0.25
+			fireflies[i].position.y += sin(Time.get_ticks_msec() * 0.0015 + i) * 0.0015
 	for i in foliage.size():
 		foliage[i].rotation.z = sin(wind * 0.8 + i * 0.7) * 0.035
 		foliage[i].position.x += sin(wind * 0.45 + i) * 0.0008
@@ -152,6 +156,22 @@ func _build_environment() -> void:
 		star.visible = false
 		add_child(star)
 		stars.append(star)
+	for i in 18:
+		var firefly := MeshInstance3D.new()
+		var glow_mesh := SphereMesh.new()
+		glow_mesh.radius = 0.045
+		glow_mesh.height = 0.09
+		firefly.mesh = glow_mesh
+		firefly.position = Vector3(-9.0 + fmod(float(i) * 1.17, 16.0), 0.8 + fmod(float(i) * 0.42, 2.2), 0.5 + fmod(float(i) * 0.91, 5.5))
+		var glow_mat := StandardMaterial3D.new()
+		glow_mat.albedo_color = Color("#f5e77d")
+		glow_mat.emission_enabled = true
+		glow_mat.emission = Color("#f5d94e")
+		glow_mat.emission_energy_multiplier = 2.3
+		firefly.material_override = glow_mat
+		firefly.visible = false
+		add_child(firefly)
+		fireflies.append(firefly)
 	var env := WorldEnvironment.new()
 	env.environment = Environment.new()
 	env.environment.background_mode = Environment.BG_COLOR
