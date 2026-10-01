@@ -9,6 +9,7 @@ var world_health := 0.72
 var save_path := "user://nutriworld_state.json"
 var camera_yaw := 0.0
 var camera_pitch := -0.42
+var camera_target := Vector3(-1.8, 0.0, -0.8)
 var dragging := false
 var last_pointer := Vector2.ZERO
 var touch_points: Dictionary = {}
@@ -134,10 +135,10 @@ func _input(event: InputEvent) -> void:
 func _update_camera() -> void:
 	if camera == null:
 		return
-	var distance: float = clampf(camera.position.distance_to(Vector3.ZERO), 8.0, 28.0)
+	var distance: float = clampf(camera.position.distance_to(camera_target), 8.0, 22.0)
 	var offset: Vector3 = Vector3(sin(camera_yaw) * cos(camera_pitch), -sin(camera_pitch), cos(camera_yaw) * cos(camera_pitch)) * distance
-	camera.position = offset
-	camera.look_at(Vector3(0, 0, 0))
+	camera.position = camera_target + offset
+	camera.look_at(camera_target)
 
 func _build_environment() -> void:
 	var sun := DirectionalLight3D.new()
@@ -419,8 +420,8 @@ func _add_rock(pos: Vector3, scale_factor: float) -> void:
 
 func _build_camera() -> void:
 	camera = Camera3D.new()
-	camera.position = Vector3(0, 11, 18)
-	camera.look_at_from_position(camera.position, Vector3(0, 0, 0))
+	camera.position = Vector3(-1.8, 7.2, 12.8)
+	camera.look_at_from_position(camera.position, camera_target)
 	add_child(camera)
 	camera.current = true
 
@@ -626,4 +627,3 @@ func _load_state() -> void:
 func save_world_state() -> void:
 	var file := FileAccess.open(save_path, FileAccess.WRITE)
 	file.store_string(JSON.stringify({"world_health": world_health}))
-
