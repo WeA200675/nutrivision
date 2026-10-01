@@ -24,6 +24,7 @@ var health_label: Label
 var sun_light: DirectionalLight3D
 var moon_node: MeshInstance3D
 var moon_light: DirectionalLight3D
+var stars: Array[Node3D] = []
 
 func _ready() -> void:
 	rng.seed = 82341
@@ -72,6 +73,8 @@ func _process(delta: float) -> void:
 			moon_node.visible = night_factor > 0.18
 		if moon_light:
 			moon_light.light_energy = 0.22 * night_factor
+		for star in stars:
+			star.visible = night_factor > 0.32
 	for i in foliage.size():
 		foliage[i].rotation.z = sin(wind * 0.8 + i * 0.7) * 0.035
 		foliage[i].position.x += sin(wind * 0.45 + i) * 0.0008
@@ -133,6 +136,22 @@ func _build_environment() -> void:
 	moon_mat.emission_energy_multiplier = 0.7
 	moon_node.material_override = moon_mat
 	add_child(moon_node)
+	for i in 36:
+		var star := MeshInstance3D.new()
+		var star_mesh := SphereMesh.new()
+		star_mesh.radius = 0.035
+		star_mesh.height = 0.07
+		star.mesh = star_mesh
+		star.position = Vector3(-18.0 + fmod(float(i) * 7.31, 36.0), 8.5 + fmod(float(i) * 2.17, 7.0), -13.0 - fmod(float(i) * 1.9, 8.0))
+		var star_mat := StandardMaterial3D.new()
+		star_mat.albedo_color = Color("#fff8d2")
+		star_mat.emission_enabled = true
+		star_mat.emission = Color("#fff2b3")
+		star_mat.emission_energy_multiplier = 1.6
+		star.material_override = star_mat
+		star.visible = false
+		add_child(star)
+		stars.append(star)
 	var env := WorldEnvironment.new()
 	env.environment = Environment.new()
 	env.environment.background_mode = Environment.BG_COLOR
