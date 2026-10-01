@@ -121,6 +121,7 @@ func _build_environment() -> void:
 	for i in 10:
 		var x := -13.0 + i * 2.9
 		_add_tree(Vector3(x, 0, -5.0 - (i % 2) * 2.0), 0.85 + (i % 3) * 0.12)
+	_add_imported_nature_models()
 	for i in 5:
 		_add_cloud(Vector3(-15.0 + i * 7.5, 8.5 + (i % 2), -8.0 - i))
 
@@ -204,6 +205,24 @@ func _build_landscape_details() -> void:
 		flower_mat.albedo_color = Color("#e889a8") if i % 2 == 0 else Color("#f3d45d")
 		flower.material_override = flower_mat
 		add_child(flower)
+
+func _add_imported_nature_models() -> void:
+	var tree_path := "res://assets/imported/kenney_nature/Models/GLTF format/tree_pineTallD_detailed.glb"
+	var rock_path := "res://assets/imported/kenney_nature/Models/GLTF format/rock_largeC.glb"
+	var tree_scene := load(tree_path)
+	var rock_scene := load(rock_path)
+	if tree_scene is PackedScene:
+		for i in 5:
+			var tree := tree_scene.instantiate()
+			tree.position = Vector3(-11.0 + i * 5.2, 0, -7.0)
+			tree.scale = Vector3.ONE * 1.4
+			add_child(tree)
+	if rock_scene is PackedScene:
+		for i in 6:
+			var rock := rock_scene.instantiate()
+			rock.position = Vector3(-5.5 + i * 2.1, 0.05, 3.1)
+			rock.scale = Vector3.ONE * 0.55
+			add_child(rock)
 
 func _build_grass() -> void:
 	for i in 75:
