@@ -323,6 +323,7 @@ func _add_imported_nature_models() -> void:
 			tree.position = Vector3(-11.0 + i * 5.2, 0, -7.0)
 			tree.scale = Vector3.ONE * 1.4
 			add_child(tree)
+			if tree is Node3D: foliage.append(tree)
 	if rock_scene is PackedScene:
 		for i in 6:
 			var rock := rock_scene.instantiate()
@@ -374,17 +375,20 @@ func _add_imported_building() -> void:
 			grass_patch.position = Vector3(-8.0 + fmod(float(i) * 1.55, 15.0), 0.0, 1.5 + fmod(float(i) * 0.77, 6.0))
 			grass_patch.scale = Vector3.ONE * 0.55
 			add_child(grass_patch)
+			if grass_patch is Node3D: grass.append(grass_patch)
 	if flower_scene is PackedScene:
 		for i in 12:
 			var flower := flower_scene.instantiate()
 			flower.position = Vector3(-8.0 + fmod(float(i) * 1.9, 15.0), 0.0, 1.0 + fmod(float(i) * 1.13, 6.5))
 			flower.scale = Vector3.ONE * 0.45
 			add_child(flower)
+			if flower is Node3D: foliage.append(flower)
 		for i in 8:
 			var sunflower := flower_scene.instantiate()
 			sunflower.position = Vector3(-9.0 + i * 0.55, 0.05, 0.2 + (i % 2) * 0.35)
 			sunflower.scale = Vector3.ONE * 1.15
 			add_child(sunflower)
+			if sunflower is Node3D: foliage.append(sunflower)
 
 func _build_grass() -> void:
 	for i in 75:
