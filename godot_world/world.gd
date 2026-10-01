@@ -530,6 +530,12 @@ func _build_hud() -> void:
 	health_label.add_theme_font_size_override("font_size", 20)
 	health_label.add_theme_color_override("font_color", Color("#173b35"))
 	layer.add_child(health_label)
+	var hint := Label.new()
+	hint.position = Vector2(26, 52)
+	hint.text = "Ziehen: Kamera bewegen   •   Zwei Finger: Zoom"
+	hint.add_theme_font_size_override("font_size", 14)
+	hint.add_theme_color_override("font_color", Color("#315c59"))
+	layer.add_child(hint)
 
 func set_world_health(value: float) -> void:
 	world_health = clamp(value, 0.0, 1.0)
