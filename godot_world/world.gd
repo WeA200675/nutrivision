@@ -275,6 +275,11 @@ func _add_imported_building() -> void:
 			flower.position = Vector3(-8.0 + fmod(float(i) * 1.9, 15.0), 0.0, 1.0 + fmod(float(i) * 1.13, 6.5))
 			flower.scale = Vector3.ONE * 0.45
 			add_child(flower)
+		for i in 8:
+			var sunflower := flower_scene.instantiate()
+			sunflower.position = Vector3(-9.0 + i * 0.55, 0.05, 0.2 + (i % 2) * 0.35)
+			sunflower.scale = Vector3.ONE * 1.15
+			add_child(sunflower)
 
 func _build_grass() -> void:
 	for i in 75:
