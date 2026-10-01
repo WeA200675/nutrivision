@@ -19,6 +19,7 @@ var grass: Array[Node3D] = []
 var pond_material: ShaderMaterial
 var last_season := -1
 var seasonal_particles: CPUParticles3D
+var chimney_smoke: CPUParticles3D
 var health_label: Label
 
 func _ready() -> void:
@@ -138,6 +139,25 @@ func _build_cabin() -> void:
 	lamp.light_energy = 1.6
 	lamp.omni_range = 4.0
 	add_child(lamp)
+	_add_box("Chimney", Vector3(-6.15, 3.15, -2.1), Vector3(0.55, 1.0, 0.55), Color("#704c43"))
+	chimney_smoke = CPUParticles3D.new()
+	chimney_smoke.amount = 18
+	chimney_smoke.lifetime = 4.5
+	chimney_smoke.emitting = false
+	chimney_smoke.position = Vector3(-6.15, 3.75, -2.1)
+	chimney_smoke.direction = Vector3(0.1, 1, 0)
+	chimney_smoke.spread = 18.0
+	chimney_smoke.gravity = Vector3(0, 0.05, 0)
+	var smoke_mesh := SphereMesh.new()
+	smoke_mesh.radius = 0.16
+	smoke_mesh.height = 0.28
+	chimney_smoke.mesh = smoke_mesh
+	var smoke_mat := StandardMaterial3D.new()
+	smoke_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	smoke_mat.albedo_color = Color(0.76, 0.78, 0.76, 0.28)
+	smoke_mat.billboard_mode = BaseMaterial3D.BILLBOARD_ENABLED
+	smoke_mesh.material = smoke_mat
+	add_child(chimney_smoke)
 	for i in 7:
 		var path := _add_box("Path", Vector3(-6.3 + i * 0.85, -0.1, 1.9 + i * 0.35), Vector3(0.72, 0.12, 0.52), Color("#c7a875"))
 		path.rotation.y = -0.18
@@ -302,6 +322,8 @@ func _apply_season() -> void:
 		particle_mat.billboard_mode = BaseMaterial3D.BILLBOARD_ENABLED
 		particle_mesh.material = particle_mat
 		add_child(seasonal_particles)
+	if chimney_smoke:
+		chimney_smoke.emitting = season == 3
 	_apply_health_visuals()
 
 func _apply_health_visuals() -> void:
