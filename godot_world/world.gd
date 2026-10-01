@@ -49,6 +49,7 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	for item in fish:
 		var body: MeshInstance3D = item.body
+		var tail: MeshInstance3D = item.tail
 		var velocity: Vector3 = item.velocity
 		item.turn_time -= delta
 		if item.turn_time <= 0.0:
@@ -63,6 +64,8 @@ func _process(delta: float) -> void:
 		body.position.y = -0.05 + sin(Time.get_ticks_msec() * 0.002 + item.phase) * 0.035
 		body.rotation.y = atan2(velocity.x, velocity.z)
 		body.scale.x = 1.0 + sin(Time.get_ticks_msec() * 0.008 + item.phase) * 0.08
+		tail.rotation.y = sin(Time.get_ticks_msec() * 0.014 + item.phase) * 0.38
+		tail.rotation.z = cos(Time.get_ticks_msec() * 0.011 + item.phase) * 0.08
 		fish[fish.find(item)] = item
 	_update_camera()
 	var current_season: int = _season_for_month(Time.get_datetime_dict_from_system().month)
@@ -471,7 +474,7 @@ func _build_fish(count: int) -> void:
 		fish_body.add_child(fin)
 		fish_body.position = Vector3(rng.randf_range(-5.5, 5.5), -0.05, rng.randf_range(-3.2, 3.2))
 		add_child(fish_body)
-		fish.append({"body": fish_body, "velocity": Vector3(rng.randf_range(-0.9, 0.9), 0, rng.randf_range(-0.35, 0.35)).normalized() * 0.55, "phase": rng.randf_range(0, 6.28), "turn_time": rng.randf_range(1.4, 4.0)})
+		fish.append({"body": fish_body, "tail": tail, "velocity": Vector3(rng.randf_range(-0.9, 0.9), 0, rng.randf_range(-0.35, 0.35)).normalized() * 0.55, "phase": rng.randf_range(0, 6.28), "turn_time": rng.randf_range(1.4, 4.0)})
 
 func _add_tree(pos: Vector3, scale_factor: float) -> void:
 	_add_cylinder("Trunk", pos + Vector3(0, 1.0, 0), Vector3(0.28, 2.0, 0.28), Color("#70452e"))
