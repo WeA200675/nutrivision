@@ -22,6 +22,8 @@ var seasonal_particles: CPUParticles3D
 var chimney_smoke: CPUParticles3D
 var health_label: Label
 var sun_light: DirectionalLight3D
+var moon_node: MeshInstance3D
+var moon_light: DirectionalLight3D
 
 func _ready() -> void:
 	rng.seed = 82341
@@ -64,6 +66,12 @@ func _process(delta: float) -> void:
 		var now := Time.get_datetime_dict_from_system()
 		var daylight: float = float(now.hour) + float(now.minute) / 60.0
 		sun_light.rotation_degrees = Vector3(-25.0 - sin(daylight / 24.0 * TAU) * 35.0, -35.0 + daylight * 7.0, 0)
+		var night_factor: float = clampf(abs(daylight - 12.0) / 6.0, 0.0, 1.0)
+		if moon_node:
+			moon_node.position = Vector3(cos(daylight / 24.0 * TAU) * 15.0, 8.0 + sin(daylight / 24.0 * TAU) * 5.0, -12.0)
+			moon_node.visible = night_factor > 0.18
+		if moon_light:
+			moon_light.light_energy = 0.22 * night_factor
 	for i in foliage.size():
 		foliage[i].rotation.z = sin(wind * 0.8 + i * 0.7) * 0.035
 		foliage[i].position.x += sin(wind * 0.45 + i) * 0.0008
@@ -108,6 +116,23 @@ func _build_environment() -> void:
 	sun.rotation_degrees = Vector3(-52, -28, 0)
 	sun.light_energy = 1.15
 	add_child(sun)
+	moon_light = DirectionalLight3D.new()
+	moon_light.light_color = Color("#b7c9ff")
+	moon_light.shadow_enabled = true
+	add_child(moon_light)
+	moon_node = MeshInstance3D.new()
+	var moon_mesh := SphereMesh.new()
+	moon_mesh.radius = 1.05
+	moon_mesh.height = 2.1
+	moon_node.mesh = moon_mesh
+	moon_node.position = Vector3(0, 12, -12)
+	var moon_mat := StandardMaterial3D.new()
+	moon_mat.albedo_color = Color("#eef2ff")
+	moon_mat.emission_enabled = true
+	moon_mat.emission = Color("#aebeff")
+	moon_mat.emission_energy_multiplier = 0.7
+	moon_node.material_override = moon_mat
+	add_child(moon_node)
 	var env := WorldEnvironment.new()
 	env.environment = Environment.new()
 	env.environment.background_mode = Environment.BG_COLOR
