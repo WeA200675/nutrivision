@@ -26,6 +26,7 @@ var moon_node: MeshInstance3D
 var moon_light: DirectionalLight3D
 var stars: Array[Node3D] = []
 var fireflies: Array[Node3D] = []
+var butterflies: Array[Node3D] = []
 
 func _ready() -> void:
 	rng.seed = 82341
@@ -79,6 +80,10 @@ func _process(delta: float) -> void:
 		for i in fireflies.size():
 			fireflies[i].visible = night_factor > 0.25
 			fireflies[i].position.y += sin(Time.get_ticks_msec() * 0.0015 + i) * 0.0015
+		var day_factor: float = 1.0 - night_factor
+		for i in butterflies.size():
+			butterflies[i].visible = day_factor > 0.35
+			butterflies[i].position += Vector3(sin(Time.get_ticks_msec() * 0.001 + i) * 0.002, cos(Time.get_ticks_msec() * 0.0014 + i) * 0.002, sin(Time.get_ticks_msec() * 0.0008 + i) * 0.002)
 	for i in foliage.size():
 		foliage[i].rotation.z = sin(wind * 0.8 + i * 0.7) * 0.035
 		foliage[i].position.x += sin(wind * 0.45 + i) * 0.0008
@@ -172,6 +177,19 @@ func _build_environment() -> void:
 		firefly.visible = false
 		add_child(firefly)
 		fireflies.append(firefly)
+	for i in 8:
+		var butterfly := MeshInstance3D.new()
+		var wing_mesh := SphereMesh.new()
+		wing_mesh.radius = 0.12
+		wing_mesh.height = 0.06
+		butterfly.mesh = wing_mesh
+		butterfly.scale = Vector3(1.5, 0.35, 0.8)
+		butterfly.position = Vector3(-8.0 + fmod(float(i) * 1.83, 14.0), 1.0 + fmod(float(i) * 0.33, 1.8), 0.8 + fmod(float(i) * 0.74, 5.0))
+		var wing_mat := StandardMaterial3D.new()
+		wing_mat.albedo_color = Color("#f6b6d1") if i % 2 == 0 else Color("#9bd4ee")
+		butterfly.material_override = wing_mat
+		add_child(butterfly)
+		butterflies.append(butterfly)
 	var env := WorldEnvironment.new()
 	env.environment = Environment.new()
 	env.environment.background_mode = Environment.BG_COLOR
