@@ -62,13 +62,13 @@ func _process(delta: float) -> void:
 		body.scale.x = 1.0 + sin(Time.get_ticks_msec() * 0.008 + item.phase) * 0.08
 		fish[fish.find(item)] = item
 	_update_camera()
-	var current_season := _season_for_month(Time.get_datetime_dict_from_system().month)
+	var current_season: int = _season_for_month(Time.get_datetime_dict_from_system().month)
 	if current_season != last_season:
 		_apply_season()
 	_apply_health_visuals()
 	var wind := Time.get_ticks_msec() * 0.001
 	if sun_light:
-		var now := Time.get_datetime_dict_from_system()
+		var now: Dictionary = Time.get_datetime_dict_from_system()
 		var daylight: float = float(now.hour) + float(now.minute) / 60.0
 		sun_light.rotation_degrees = Vector3(-25.0 - sin(daylight / 24.0 * TAU) * 35.0, -35.0 + daylight * 7.0, 0)
 		var night_factor: float = clampf(abs(daylight - 12.0) / 6.0, 0.0, 1.0)
@@ -315,8 +315,8 @@ func _build_landscape_details() -> void:
 func _add_imported_nature_models() -> void:
 	var tree_path := "res://assets/imported/kenney_nature/Models/GLTF format/tree_pineTallD_detailed.glb"
 	var rock_path := "res://assets/imported/kenney_nature/Models/GLTF format/rock_largeC.glb"
-	var tree_scene := load(tree_path)
-	var rock_scene := load(rock_path)
+	var tree_scene: PackedScene = load(tree_path) as PackedScene
+	var rock_scene: PackedScene = load(rock_path) as PackedScene
 	if tree_scene is PackedScene:
 		for i in 5:
 			var tree := tree_scene.instantiate()
@@ -332,9 +332,9 @@ func _add_imported_nature_models() -> void:
 			add_child(rock)
 
 func _add_imported_building() -> void:
-	var wall_scene := load("res://assets/imported/kenney_building/Models/GLB format/wall-window-square-detailed.glb")
-	var roof_scene := load("res://assets/imported/kenney_building/Models/GLB format/roof-flat-square.glb")
-	var door_scene := load("res://assets/imported/kenney_building/Models/GLB format/door-rotate-square-a.glb")
+	var wall_scene: PackedScene = load("res://assets/imported/kenney_building/Models/GLB format/wall-window-square-detailed.glb") as PackedScene
+	var roof_scene: PackedScene = load("res://assets/imported/kenney_building/Models/GLB format/roof-flat-square.glb") as PackedScene
+	var door_scene: PackedScene = load("res://assets/imported/kenney_building/Models/GLB format/door-rotate-square-a.glb") as PackedScene
 	if wall_scene is PackedScene:
 		for data in [[Vector3(-7.0, 1.0, -3.0), 0.0], [Vector3(-7.0, 1.0, 0.0), 0.0], [Vector3(-9.1, 1.0, -1.5), PI * 0.5], [Vector3(-4.9, 1.0, -1.5), PI * 0.5]]:
 			var wall := wall_scene.instantiate()
@@ -352,8 +352,8 @@ func _add_imported_building() -> void:
 		door.position = Vector3(-7.0, 0.7, 0.08)
 		door.scale = Vector3.ONE * 1.2
 		add_child(door)
-	var path_scene := load("res://assets/imported/kenney_nature/Models/GLTF format/ground_pathStraight.glb")
-	var bridge_scene := load("res://assets/imported/kenney_nature/Models/GLTF format/bridge_side_woodRound.glb")
+	var path_scene: PackedScene = load("res://assets/imported/kenney_nature/Models/GLTF format/ground_pathStraight.glb") as PackedScene
+	var bridge_scene: PackedScene = load("res://assets/imported/kenney_nature/Models/GLTF format/bridge_side_woodRound.glb") as PackedScene
 	if path_scene is PackedScene:
 		for i in 5:
 			var path_piece := path_scene.instantiate()
@@ -367,8 +367,8 @@ func _add_imported_building() -> void:
 		bridge.rotation.y = PI * 0.5
 		bridge.scale = Vector3.ONE * 1.2
 		add_child(bridge)
-	var grass_scene := load("res://assets/imported/kenney_nature/Models/GLTF format/grass_large.glb")
-	var flower_scene := load("res://assets/imported/kenney_nature/Models/GLTF format/flower_yellowB.glb")
+	var grass_scene: PackedScene = load("res://assets/imported/kenney_nature/Models/GLTF format/grass_large.glb") as PackedScene
+	var flower_scene: PackedScene = load("res://assets/imported/kenney_nature/Models/GLTF format/flower_yellowB.glb") as PackedScene
 	if grass_scene is PackedScene:
 		for i in 18:
 			var grass_patch := grass_scene.instantiate()
@@ -509,7 +509,7 @@ func _apply_season() -> void:
 		add_child(seasonal_particles)
 	if chimney_smoke:
 		var month: int = Time.get_datetime_dict_from_system().month
-		var cold_weather := month >= 10 or month <= 3
+		var cold_weather: bool = month >= 10 or month <= 3
 		chimney_smoke.emitting = cold_weather
 	_apply_health_visuals()
 
