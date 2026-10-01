@@ -21,6 +21,7 @@ var last_season := -1
 var seasonal_particles: CPUParticles3D
 var chimney_smoke: CPUParticles3D
 var health_label: Label
+var sun_light: DirectionalLight3D
 
 func _ready() -> void:
 	rng.seed = 82341
@@ -59,6 +60,10 @@ func _process(delta: float) -> void:
 		_apply_season()
 	_apply_health_visuals()
 	var wind := Time.get_ticks_msec() * 0.001
+	if sun_light:
+		var now := Time.get_datetime_dict_from_system()
+		var daylight: float = float(now.hour) + float(now.minute) / 60.0
+		sun_light.rotation_degrees = Vector3(-25.0 - sin(daylight / 24.0 * TAU) * 35.0, -35.0 + daylight * 7.0, 0)
 	for i in foliage.size():
 		foliage[i].rotation.z = sin(wind * 0.8 + i * 0.7) * 0.035
 		foliage[i].position.x += sin(wind * 0.45 + i) * 0.0008
@@ -99,6 +104,7 @@ func _update_camera() -> void:
 
 func _build_environment() -> void:
 	var sun := DirectionalLight3D.new()
+	sun_light = sun
 	sun.rotation_degrees = Vector3(-52, -28, 0)
 	sun.light_energy = 1.15
 	add_child(sun)
