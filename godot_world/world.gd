@@ -261,6 +261,20 @@ func _add_imported_building() -> void:
 		bridge.rotation.y = PI * 0.5
 		bridge.scale = Vector3.ONE * 1.2
 		add_child(bridge)
+	var grass_scene := load("res://assets/imported/kenney_nature/Models/GLTF format/grass_large.glb")
+	var flower_scene := load("res://assets/imported/kenney_nature/Models/GLTF format/flower_yellowB.glb")
+	if grass_scene is PackedScene:
+		for i in 18:
+			var grass_patch := grass_scene.instantiate()
+			grass_patch.position = Vector3(-8.0 + fmod(float(i) * 1.55, 15.0), 0.0, 1.5 + fmod(float(i) * 0.77, 6.0))
+			grass_patch.scale = Vector3.ONE * 0.55
+			add_child(grass_patch)
+	if flower_scene is PackedScene:
+		for i in 12:
+			var flower := flower_scene.instantiate()
+			flower.position = Vector3(-8.0 + fmod(float(i) * 1.9, 15.0), 0.0, 1.0 + fmod(float(i) * 1.13, 6.5))
+			flower.scale = Vector3.ONE * 0.45
+			add_child(flower)
 
 func _build_grass() -> void:
 	for i in 75:
