@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'nutri_world.dart';
-import 'nutri_world_seasonal_overlay.dart';
 import 'world_memory.dart';
 
 class NutriWorldScreen extends StatefulWidget {
@@ -46,7 +45,6 @@ class _NutriWorldScreenState extends State<NutriWorldScreen> {
                       errorBuilder: (_, __, ___) => const ColoredBox(color: Color(0xFFBFE8F2)),
                     ),
                   ),
-                  Positioned.fill(child: NutriWorldSeasonalOverlay(state: state)),
                 ],
                 ),
               ),
