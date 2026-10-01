@@ -122,6 +122,7 @@ func _build_environment() -> void:
 		var x := -13.0 + i * 2.9
 		_add_tree(Vector3(x, 0, -5.0 - (i % 2) * 2.0), 0.85 + (i % 3) * 0.12)
 	_add_imported_nature_models()
+	_add_imported_building()
 	for i in 5:
 		_add_cloud(Vector3(-15.0 + i * 7.5, 8.5 + (i % 2), -8.0 - i))
 
@@ -223,6 +224,28 @@ func _add_imported_nature_models() -> void:
 			rock.position = Vector3(-5.5 + i * 2.1, 0.05, 3.1)
 			rock.scale = Vector3.ONE * 0.55
 			add_child(rock)
+
+func _add_imported_building() -> void:
+	var wall_scene := load("res://assets/imported/kenney_building/Models/GLB format/wall-window-square-detailed.glb")
+	var roof_scene := load("res://assets/imported/kenney_building/Models/GLB format/roof-flat-square.glb")
+	var door_scene := load("res://assets/imported/kenney_building/Models/GLB format/door-rotate-square-a.glb")
+	if wall_scene is PackedScene:
+		for data in [[Vector3(-7.0, 1.0, -3.0), 0.0], [Vector3(-7.0, 1.0, 0.0), 0.0], [Vector3(-9.1, 1.0, -1.5), PI * 0.5], [Vector3(-4.9, 1.0, -1.5), PI * 0.5]]:
+			var wall := wall_scene.instantiate()
+			wall.position = data[0]
+			wall.rotation.y = data[1]
+			wall.scale = Vector3.ONE * 1.35
+			add_child(wall)
+	if roof_scene is PackedScene:
+		var roof := roof_scene.instantiate()
+		roof.position = Vector3(-7.0, 2.65, -1.5)
+		roof.scale = Vector3(2.0, 1.0, 1.7)
+		add_child(roof)
+	if door_scene is PackedScene:
+		var door := door_scene.instantiate()
+		door.position = Vector3(-7.0, 0.7, 0.08)
+		door.scale = Vector3.ONE * 1.2
+		add_child(door)
 
 func _build_grass() -> void:
 	for i in 75:
