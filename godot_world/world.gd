@@ -246,6 +246,21 @@ func _add_imported_building() -> void:
 		door.position = Vector3(-7.0, 0.7, 0.08)
 		door.scale = Vector3.ONE * 1.2
 		add_child(door)
+	var path_scene := load("res://assets/imported/kenney_nature/Models/GLTF format/ground_pathStraight.glb")
+	var bridge_scene := load("res://assets/imported/kenney_nature/Models/GLTF format/bridge_side_woodRound.glb")
+	if path_scene is PackedScene:
+		for i in 5:
+			var path_piece := path_scene.instantiate()
+			path_piece.position = Vector3(-5.0 + i * 1.8, 0.0, 2.0 + i * 0.25)
+			path_piece.rotation.y = -0.14
+			path_piece.scale = Vector3.ONE * 0.9
+			add_child(path_piece)
+	if bridge_scene is PackedScene:
+		var bridge := bridge_scene.instantiate()
+		bridge.position = Vector3(5.8, 0.1, 3.1)
+		bridge.rotation.y = PI * 0.5
+		bridge.scale = Vector3.ONE * 1.2
+		add_child(bridge)
 
 func _build_grass() -> void:
 	for i in 75:
