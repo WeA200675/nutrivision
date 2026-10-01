@@ -30,6 +30,10 @@ class _NutriWorldScreenState extends State<NutriWorldScreen> {
             child: InteractiveViewer(
               minScale: .65,
               maxScale: 4,
+              panEnabled: true,
+              scaleEnabled: true,
+              alignment: Alignment.center,
+              panAxis: PanAxis.free,
               boundaryMargin: const EdgeInsets.all(180),
               constrained: false,
               child: SizedBox(
