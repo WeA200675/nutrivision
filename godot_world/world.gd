@@ -42,6 +42,7 @@ func _ready() -> void:
 	_build_grass()
 	_build_camera()
 	_build_fish(8)
+	_build_pond_details()
 	_apply_season()
 	_build_hud()
 	set_process(true)
@@ -475,6 +476,32 @@ func _build_fish(count: int) -> void:
 		fish_body.position = Vector3(rng.randf_range(-5.5, 5.5), -0.05, rng.randf_range(-3.2, 3.2))
 		add_child(fish_body)
 		fish.append({"body": fish_body, "tail": tail, "velocity": Vector3(rng.randf_range(-0.9, 0.9), 0, rng.randf_range(-0.35, 0.35)).normalized() * 0.55, "phase": rng.randf_range(0, 6.28), "turn_time": rng.randf_range(1.4, 4.0)})
+
+func _build_pond_details() -> void:
+	for i in 10:
+		var pad := MeshInstance3D.new()
+		var pad_mesh := SphereMesh.new()
+		pad_mesh.radius = 0.32 + float(i % 3) * 0.07
+		pad_mesh.height = 0.035
+		pad.mesh = pad_mesh
+		pad.scale = Vector3(1.35, 1.0, 0.82)
+		pad.position = Vector3(-5.4 + fmod(float(i) * 1.23, 10.0), 0.08, -2.7 + fmod(float(i) * 0.91, 5.2))
+		var pad_mat := StandardMaterial3D.new()
+		pad_mat.albedo_color = Color("#4f9b62") if i % 2 == 0 else Color("#6aad68")
+		pad_mat.roughness = 0.85
+		pad.material_override = pad_mat
+		add_child(pad)
+		if i % 3 == 0:
+			var blossom := MeshInstance3D.new()
+			var blossom_mesh := SphereMesh.new()
+			blossom_mesh.radius = 0.11
+			blossom_mesh.height = 0.06
+			blossom.mesh = blossom_mesh
+			blossom.position = pad.position + Vector3(0, 0.08, 0)
+			var blossom_mat := StandardMaterial3D.new()
+			blossom_mat.albedo_color = Color("#f3b6cf")
+			blossom.material_override = blossom_mat
+			add_child(blossom)
 
 func _add_tree(pos: Vector3, scale_factor: float) -> void:
 	_add_cylinder("Trunk", pos + Vector3(0, 1.0, 0), Vector3(0.28, 2.0, 0.28), Color("#70452e"))
