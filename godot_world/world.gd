@@ -515,6 +515,12 @@ func set_world_health(value: float) -> void:
 	_apply_health_visuals()
 	save_world_state()
 
+func record_activity_reward(points: float) -> void:
+	# Public bridge for NutriVision: positive activity gently restores the world.
+	world_health = clampf(world_health + points * 0.01, 0.0, 1.0)
+	_apply_health_visuals()
+	save_world_state()
+
 func _add_cloud(pos: Vector3) -> void:
 	var cloud := MeshInstance3D.new()
 	var mesh := SphereMesh.new()
