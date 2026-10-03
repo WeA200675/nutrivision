@@ -15,11 +15,11 @@ if (!app) {
 }
 
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x8ac0f1);
-scene.fog = new THREE.Fog(0x8ac0f1, 22, 90);
+scene.background = new THREE.Color(0x8cc5f3);
+scene.fog = new THREE.Fog(0x8cc5f3, 26, 90);
 
-const camera = new THREE.PerspectiveCamera(48, window.innerWidth / window.innerHeight, 0.1, 400);
-camera.position.set(20, 12, 20);
+const camera = new THREE.PerspectiveCamera(48, window.innerWidth / window.innerHeight, 0.1, 420);
+camera.position.set(22, 13, 22);
 
 const renderer = new THREE.WebGLRenderer({
   antialias: true,
@@ -32,99 +32,108 @@ renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.shadowMap.autoUpdate = true;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.1;
+renderer.toneMappingExposure = 1.15;
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 app.appendChild(renderer.domElement);
 
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.enablePan = true;
-controls.target.set(0, 2.5, 0);
+controls.target.set(0, 2.8, 0);
 controls.maxPolarAngle = Math.PI * 0.48;
 controls.minDistance = 8;
-controls.maxDistance = 42;
+controls.maxDistance = 48;
 
-const hemiLight = new THREE.HemisphereLight(0xe4f4ff, 0x3e5437, 1.8);
-scene.add(hemiLight);
+const hemisphereLight = new THREE.HemisphereLight(0xeaf7ff, 0x35563d, 1.9);
+scene.add(hemisphereLight);
 
-const sunLight = new THREE.DirectionalLight(0xfff0bd, 1.5);
-sunLight.position.set(18, 24, 10);
+const sunLight = new THREE.DirectionalLight(0xfff0bc, 1.6);
+sunLight.position.set(16, 24, 10);
 sunLight.castShadow = true;
 sunLight.shadow.mapSize.width = 2048;
 sunLight.shadow.mapSize.height = 2048;
-sunLight.shadow.camera.left = -30;
-sunLight.shadow.camera.right = 30;
-sunLight.shadow.camera.top = 30;
-sunLight.shadow.camera.bottom = -30;
+sunLight.shadow.camera.left = -35;
+sunLight.shadow.camera.right = 35;
+sunLight.shadow.camera.top = 35;
+sunLight.shadow.camera.bottom = -35;
 sunLight.shadow.camera.near = 1;
 sunLight.shadow.camera.far = 90;
 scene.add(sunLight);
 
-const moonLight = new THREE.DirectionalLight(0x9eb8ff, 0.18);
-moonLight.position.set(-18, 15, -14);
+const moonLight = new THREE.DirectionalLight(0x9caeff, 0.17);
+moonLight.position.set(-18, 16, -14);
 scene.add(moonLight);
 
-const nightAmbient = new THREE.AmbientLight(0x7e9ed4, 0.25);
+const nightAmbient = new THREE.AmbientLight(0x7d9dd7, 0.25);
 scene.add(nightAmbient);
 
 const terrain = new THREE.Mesh(
-  new THREE.CircleGeometry(30, 180),
-  new THREE.MeshStandardMaterial({ color: 0x79a95c, roughness: 1, metalness: 0 })
+  new THREE.CircleGeometry(30, 200),
+  new THREE.MeshStandardMaterial({ color: 0x7da85e, roughness: 1, metalness: 0 })
 );
 terrain.rotation.x = -Math.PI / 2;
 terrain.receiveShadow = true;
 scene.add(terrain);
 
-const islandBump = new THREE.Mesh(
-  new THREE.CircleGeometry(16, 180),
-  new THREE.MeshStandardMaterial({ color: 0x84bf68, roughness: 1, metalness: 0 })
+const islandRise = new THREE.Mesh(
+  new THREE.CircleGeometry(14, 180),
+  new THREE.MeshStandardMaterial({ color: 0x85bf6a, roughness: 1, metalness: 0 })
 );
-islandBump.rotation.x = -Math.PI / 2;
-islandBump.position.y = 0.2;
-islandBump.receiveShadow = true;
-scene.add(islandBump);
+islandRise.rotation.x = -Math.PI / 2;
+islandRise.position.y = 0.2;
+islandRise.receiveShadow = true;
+scene.add(islandRise);
+
+const path = new THREE.Mesh(
+  new THREE.RingGeometry(8, 11.4, 100),
+  new THREE.MeshStandardMaterial({ color: 0xb8d39a, roughness: 1 })
+);
+path.rotation.x = -Math.PI / 2;
+path.position.y = 0.32;
+path.receiveShadow = true;
+scene.add(path);
 
 const lake = new THREE.Mesh(
-  new THREE.CircleGeometry(10.5, 180),
+  new THREE.CircleGeometry(9.8, 220),
   new THREE.MeshPhysicalMaterial({
-    color: 0x4ca9dc,
+    color: 0x4baedb,
     roughness: 0.18,
-    metalness: 0.17,
+    metalness: 0.18,
     transmission: 0.12,
     transparent: true,
     opacity: 0.96,
-    clearcoat: 0.8,
-    clearcoatRoughness: 0.2,
+    clearcoat: 0.82,
+    clearcoatRoughness: 0.18,
   })
 );
 lake.rotation.x = -Math.PI / 2;
-lake.position.y = 0.3;
+lake.position.y = 0.35;
 lake.receiveShadow = true;
 scene.add(lake);
 
 const lakeGlow = new THREE.Mesh(
-  new THREE.CircleGeometry(10.9, 180),
-  new THREE.MeshStandardMaterial({ color: 0xb4ebff, transparent: true, opacity: 0.18 })
+  new THREE.CircleGeometry(10.2, 220),
+  new THREE.MeshStandardMaterial({ color: 0xc0efff, transparent: true, opacity: 0.18 })
 );
 lakeGlow.rotation.x = -Math.PI / 2;
 lakeGlow.position.y = 0.45;
 scene.add(lakeGlow);
 
-const waterGeometry = new THREE.PlaneGeometry(20, 20, 180, 180);
+const waterGeometry = new THREE.PlaneGeometry(19, 19, 180, 180);
 const water = new THREE.Mesh(
   waterGeometry,
   new THREE.MeshPhysicalMaterial({
-    color: 0x57c0ef,
+    color: 0x57c3ef,
     transparent: true,
-    opacity: 0.95,
-    roughness: 0.12,
+    opacity: 0.96,
+    roughness: 0.14,
     metalness: 0.18,
-    clearcoat: 0.9,
-    clearcoatRoughness: 0.14,
+    clearcoat: 0.86,
+    clearcoatRoughness: 0.12,
   })
 );
 water.rotation.x = -Math.PI / 2;
-water.position.y = 0.7;
+water.position.y = 0.76;
 water.receiveShadow = true;
 scene.add(water);
 
@@ -134,21 +143,12 @@ for (let i = 0; i < waterPositions.count; i += 1) {
   waterBaseZ.push(waterPositions.getZ(i));
 }
 
-const shore = new THREE.Mesh(
-  new THREE.RingGeometry(9.8, 12.4, 90),
-  new THREE.MeshStandardMaterial({ color: 0xb9d5a4, roughness: 1 })
-);
-shore.rotation.x = -Math.PI / 2;
-shore.position.y = 0.4;
-shore.receiveShadow = true;
-scene.add(shore);
-
 function createHouse() {
   const group = new THREE.Group();
 
   const body = new THREE.Mesh(
     new THREE.BoxGeometry(4.8, 2.8, 4.6),
-    new THREE.MeshStandardMaterial({ color: 0xdcc3a2, roughness: 0.96 })
+    new THREE.MeshStandardMaterial({ color: 0xd8c3a1, roughness: 0.96 })
   );
   body.position.y = 1.4;
   body.castShadow = true;
@@ -156,8 +156,8 @@ function createHouse() {
   group.add(body);
 
   const roof = new THREE.Mesh(
-    new THREE.ConeGeometry(3.9, 2.5, 4),
-    new THREE.MeshStandardMaterial({ color: 0x7b3d34, roughness: 0.8 })
+    new THREE.ConeGeometry(3.9, 2.6, 4),
+    new THREE.MeshStandardMaterial({ color: 0x7e3d35, roughness: 0.82 })
   );
   roof.rotation.y = Math.PI / 4;
   roof.position.y = 3.5;
@@ -166,18 +166,17 @@ function createHouse() {
 
   const door = new THREE.Mesh(
     new THREE.BoxGeometry(0.9, 1.8, 0.12),
-    new THREE.MeshStandardMaterial({ color: 0x453526, roughness: 0.8 })
+    new THREE.MeshStandardMaterial({ color: 0x49372a, roughness: 0.8 })
   );
   door.position.set(0, 0.9, 2.35);
   door.castShadow = true;
   group.add(door);
 
   const windowMaterial = new THREE.MeshStandardMaterial({
-    color: 0xeaf7ff,
-    emissive: 0x6fb1ff,
-    emissiveIntensity: 0.35,
+    color: 0xebf8ff,
+    emissive: 0x74b5ff,
+    emissiveIntensity: 0.32,
   });
-
   for (const x of [-1.3, 1.3]) {
     for (const z of [-2.2, 2.2]) {
       const win = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.8, 0.1), windowMaterial);
@@ -188,24 +187,23 @@ function createHouse() {
   }
 
   const chimney = new THREE.Mesh(
-    new THREE.BoxGeometry(0.8, 1.8, 0.8),
-    new THREE.MeshStandardMaterial({ color: 0x8b6d58 })
+    new THREE.BoxGeometry(0.8, 1.7, 0.8),
+    new THREE.MeshStandardMaterial({ color: 0x8d6f5d })
   );
-  chimney.position.set(1.5, 5.2, 0.7);
+  chimney.position.set(1.5, 5.15, 0.7);
   chimney.castShadow = true;
   group.add(chimney);
 
-  group.position.set(-8, 0, -2);
+  group.position.set(-8.5, 0, -2.5);
   return group;
 }
-
 scene.add(createHouse());
 
 function createTree(x, z, scale = 1) {
   const group = new THREE.Group();
 
   const trunk = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.24 * scale, 0.38 * scale, 2.3 * scale, 12),
+    new THREE.CylinderGeometry(0.23 * scale, 0.37 * scale, 2.3 * scale, 12),
     new THREE.MeshStandardMaterial({ color: 0x6d4d2b, roughness: 1 })
   );
   trunk.position.y = 1.15 * scale;
@@ -213,15 +211,15 @@ function createTree(x, z, scale = 1) {
   trunk.receiveShadow = true;
   group.add(trunk);
 
-  const crownMaterial = new THREE.MeshStandardMaterial({ color: 0x2f7a47, roughness: 0.96 });
+  const crownMaterial = new THREE.MeshStandardMaterial({ color: 0x2d7946, roughness: 0.97 });
 
-  const crown1 = new THREE.Mesh(new THREE.ConeGeometry(1.4 * scale, 3.2 * scale, 10), crownMaterial);
-  crown1.position.y = 3.2 * scale;
+  const crown1 = new THREE.Mesh(new THREE.ConeGeometry(1.5 * scale, 3.3 * scale, 10), crownMaterial);
+  crown1.position.y = 3.1 * scale;
   crown1.castShadow = true;
   crown1.receiveShadow = true;
   group.add(crown1);
 
-  const crown2 = new THREE.Mesh(new THREE.ConeGeometry(1.1 * scale, 2.6 * scale, 10), crownMaterial);
+  const crown2 = new THREE.Mesh(new THREE.ConeGeometry(1.12 * scale, 2.55 * scale, 10), crownMaterial);
   crown2.position.y = 4.5 * scale;
   crown2.castShadow = true;
   group.add(crown2);
@@ -252,9 +250,9 @@ function createSunflower(x, z, scale = 1) {
   const bloom = new THREE.Mesh(
     new THREE.CylinderGeometry(0.2 * scale, 0.42 * scale, 0.12 * scale, 18),
     new THREE.MeshStandardMaterial({
-      color: 0xf9d34d,
-      emissive: 0x6a4e00,
-      emissiveIntensity: 0.25,
+      color: 0xf8d560,
+      emissive: 0x6e5300,
+      emissiveIntensity: 0.24,
     })
   );
   bloom.position.y = 1.2 * scale;
@@ -264,7 +262,7 @@ function createSunflower(x, z, scale = 1) {
     const angle = (i / 12) * Math.PI * 2;
     const petal = new THREE.Mesh(
       new THREE.ConeGeometry(0.12 * scale, 0.52 * scale, 8),
-      new THREE.MeshStandardMaterial({ color: 0xf7e17d, roughness: 0.9 })
+      new THREE.MeshStandardMaterial({ color: 0xf7e287, roughness: 0.9 })
     );
     petal.rotation.z = Math.PI / 2;
     petal.rotation.y = angle;
@@ -276,7 +274,7 @@ function createSunflower(x, z, scale = 1) {
   return group;
 }
 
-for (let i = 0; i < 22; i += 1) {
+for (let i = 0; i < 24; i += 1) {
   const x = (Math.random() - 0.5) * 30;
   const z = (Math.random() - 0.5) * 30;
   if (Math.abs(x) < 5 && Math.abs(z) < 5) continue;
@@ -285,17 +283,17 @@ for (let i = 0; i < 22; i += 1) {
 
 function createRock(x, z, scale = 1) {
   const rock = new THREE.Mesh(
-    new THREE.DodecahedronGeometry(0.4 * scale, 0),
-    new THREE.MeshStandardMaterial({ color: 0x7b7d7c, roughness: 1 })
+    new THREE.DodecahedronGeometry(0.42 * scale, 0),
+    new THREE.MeshStandardMaterial({ color: 0x7d7e7d, roughness: 1 })
   );
-  rock.position.set(x, 0.2 * scale, z);
+  rock.position.set(x, 0.22 * scale, z);
   rock.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI);
   rock.castShadow = true;
   rock.receiveShadow = true;
   scene.add(rock);
 }
 
-for (let i = 0; i < 26; i += 1) {
+for (let i = 0; i < 28; i += 1) {
   const x = (Math.random() - 0.5) * 26;
   const z = (Math.random() - 0.5) * 26;
   if (Math.hypot(x, z) < 8.5) continue;
@@ -345,9 +343,9 @@ for (let i = 0; i < 28; i += 1) {
 
 const fishGroup = new THREE.Group();
 const fishMaterial = new THREE.MeshStandardMaterial({
-  color: 0x9adfff,
-  emissive: 0x2b7dbd,
-  emissiveIntensity: 0.3,
+  color: 0xa4e5ff,
+  emissive: 0x2c7dbd,
+  emissiveIntensity: 0.35,
 });
 
 for (let i = 0; i < 14; i += 1) {
@@ -381,7 +379,7 @@ scene.add(sun);
 
 const moon = new THREE.Mesh(
   new THREE.SphereGeometry(1.2, 32, 32),
-  new THREE.MeshStandardMaterial({ color: 0xeaf3ff, emissive: 0x7ea7d6, emissiveIntensity: 0.2 })
+  new THREE.MeshStandardMaterial({ color: 0xeaf3ff, emissive: 0x7ea7d6, emissiveIntensity: 0.18 })
 );
 moon.position.set(-14, 11, 12);
 scene.add(moon);
@@ -470,7 +468,7 @@ function updateSkyCycle(time) {
 
   sunLight.intensity = daylight * 1.8 + 0.2;
   moonLight.intensity = night * 1.2;
-  hemiLight.intensity = 0.9 + daylight * 0.9;
+  hemisphereLight.intensity = 0.9 + daylight * 0.9;
   nightAmbient.intensity = night * 1.1;
 
   const skyColor = new THREE.Color().setHSL(0.58, 0.68, 0.5 + daylight * 0.2);
