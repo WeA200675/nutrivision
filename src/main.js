@@ -15,11 +15,11 @@ if (!app) {
 }
 
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x8cc5f3);
-scene.fog = new THREE.Fog(0x8cc5f3, 26, 90);
+scene.background = new THREE.Color(0x8fc9f6);
+scene.fog = new THREE.Fog(0x8fc9f6, 24, 90);
 
 const camera = new THREE.PerspectiveCamera(48, window.innerWidth / window.innerHeight, 0.1, 420);
-camera.position.set(22, 13, 22);
+camera.position.set(22, 13, 24);
 
 const renderer = new THREE.WebGLRenderer({
   antialias: true,
@@ -42,13 +42,13 @@ controls.enablePan = true;
 controls.target.set(0, 2.8, 0);
 controls.maxPolarAngle = Math.PI * 0.48;
 controls.minDistance = 8;
-controls.maxDistance = 48;
+controls.maxDistance = 52;
 
-const hemisphereLight = new THREE.HemisphereLight(0xeaf7ff, 0x35563d, 1.9);
-scene.add(hemisphereLight);
+const hemiLight = new THREE.HemisphereLight(0xeaf7ff, 0x37563b, 1.9);
+scene.add(hemiLight);
 
 const sunLight = new THREE.DirectionalLight(0xfff0bc, 1.6);
-sunLight.position.set(16, 24, 10);
+sunLight.position.set(18, 24, 12);
 sunLight.castShadow = true;
 sunLight.shadow.mapSize.width = 2048;
 sunLight.shadow.mapSize.height = 2048;
@@ -57,32 +57,35 @@ sunLight.shadow.camera.right = 35;
 sunLight.shadow.camera.top = 35;
 sunLight.shadow.camera.bottom = -35;
 sunLight.shadow.camera.near = 1;
-sunLight.shadow.camera.far = 90;
+sunLight.shadow.camera.far = 100;
 scene.add(sunLight);
 
-const moonLight = new THREE.DirectionalLight(0x9caeff, 0.17);
-moonLight.position.set(-18, 16, -14);
+const moonLight = new THREE.DirectionalLight(0x9baeff, 0.18);
+moonLight.position.set(-18, 16, -16);
 scene.add(moonLight);
 
-const nightAmbient = new THREE.AmbientLight(0x7d9dd7, 0.25);
+const nightAmbient = new THREE.AmbientLight(0x7d9cd9, 0.25);
 scene.add(nightAmbient);
 
+const world = new THREE.Group();
+scene.add(world);
+
 const terrain = new THREE.Mesh(
-  new THREE.CircleGeometry(30, 200),
-  new THREE.MeshStandardMaterial({ color: 0x7da85e, roughness: 1, metalness: 0 })
+  new THREE.CircleGeometry(30, 220),
+  new THREE.MeshStandardMaterial({ color: 0x7da75c, roughness: 1, metalness: 0 })
 );
 terrain.rotation.x = -Math.PI / 2;
 terrain.receiveShadow = true;
-scene.add(terrain);
+world.add(terrain);
 
 const islandRise = new THREE.Mesh(
-  new THREE.CircleGeometry(14, 180),
-  new THREE.MeshStandardMaterial({ color: 0x85bf6a, roughness: 1, metalness: 0 })
+  new THREE.CircleGeometry(14.5, 200),
+  new THREE.MeshStandardMaterial({ color: 0x89bf6d, roughness: 1, metalness: 0 })
 );
 islandRise.rotation.x = -Math.PI / 2;
 islandRise.position.y = 0.2;
 islandRise.receiveShadow = true;
-scene.add(islandRise);
+world.add(islandRise);
 
 const path = new THREE.Mesh(
   new THREE.RingGeometry(8, 11.4, 100),
@@ -91,12 +94,12 @@ const path = new THREE.Mesh(
 path.rotation.x = -Math.PI / 2;
 path.position.y = 0.32;
 path.receiveShadow = true;
-scene.add(path);
+world.add(path);
 
 const lake = new THREE.Mesh(
   new THREE.CircleGeometry(9.8, 220),
   new THREE.MeshPhysicalMaterial({
-    color: 0x4baedb,
+    color: 0x4caedc,
     roughness: 0.18,
     metalness: 0.18,
     transmission: 0.12,
@@ -107,17 +110,17 @@ const lake = new THREE.Mesh(
   })
 );
 lake.rotation.x = -Math.PI / 2;
-lake.position.y = 0.35;
+lake.position.y = 0.36;
 lake.receiveShadow = true;
-scene.add(lake);
+world.add(lake);
 
 const lakeGlow = new THREE.Mesh(
   new THREE.CircleGeometry(10.2, 220),
-  new THREE.MeshStandardMaterial({ color: 0xc0efff, transparent: true, opacity: 0.18 })
+  new THREE.MeshStandardMaterial({ color: 0xc2efff, transparent: true, opacity: 0.18 })
 );
 lakeGlow.rotation.x = -Math.PI / 2;
-lakeGlow.position.y = 0.45;
-scene.add(lakeGlow);
+lakeGlow.position.y = 0.46;
+world.add(lakeGlow);
 
 const waterGeometry = new THREE.PlaneGeometry(19, 19, 180, 180);
 const water = new THREE.Mesh(
@@ -135,7 +138,7 @@ const water = new THREE.Mesh(
 water.rotation.x = -Math.PI / 2;
 water.position.y = 0.76;
 water.receiveShadow = true;
-scene.add(water);
+world.add(water);
 
 const waterBaseZ = [];
 const waterPositions = water.geometry.attributes.position;
@@ -177,6 +180,7 @@ function createHouse() {
     emissive: 0x74b5ff,
     emissiveIntensity: 0.32,
   });
+
   for (const x of [-1.3, 1.3]) {
     for (const z of [-2.2, 2.2]) {
       const win = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.8, 0.1), windowMaterial);
@@ -197,7 +201,7 @@ function createHouse() {
   group.position.set(-8.5, 0, -2.5);
   return group;
 }
-scene.add(createHouse());
+world.add(createHouse());
 
 function createTree(x, z, scale = 1) {
   const group = new THREE.Group();
@@ -234,7 +238,7 @@ const treePositions = [
   [18, 0, 1.4], [0, -16, 1.3], [-4, -14, 1.1], [15, 12, 1.2],
 ];
 for (const [x, z, scale] of treePositions) {
-  scene.add(createTree(x, z, scale));
+  world.add(createTree(x, z, scale));
 }
 
 function createSunflower(x, z, scale = 1) {
@@ -278,7 +282,7 @@ for (let i = 0; i < 24; i += 1) {
   const x = (Math.random() - 0.5) * 30;
   const z = (Math.random() - 0.5) * 30;
   if (Math.abs(x) < 5 && Math.abs(z) < 5) continue;
-  scene.add(createSunflower(x, z, 0.9 + Math.random() * 0.8));
+  world.add(createSunflower(x, z, 0.9 + Math.random() * 0.8));
 }
 
 function createRock(x, z, scale = 1) {
@@ -290,7 +294,7 @@ function createRock(x, z, scale = 1) {
   rock.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI);
   rock.castShadow = true;
   rock.receiveShadow = true;
-  scene.add(rock);
+  world.add(rock);
 }
 
 for (let i = 0; i < 28; i += 1) {
@@ -319,7 +323,7 @@ for (let i = 0; i < 900; i += 1) {
   blade.castShadow = true;
   grassGroup.add(blade);
 }
-scene.add(grassGroup);
+world.add(grassGroup);
 
 const fireflies = [];
 for (let i = 0; i < 28; i += 1) {
@@ -368,7 +372,7 @@ for (let i = 0; i < 14; i += 1) {
   fish.rotation.y = Math.random() * Math.PI * 2;
   fishGroup.add(fish);
 }
-scene.add(fishGroup);
+world.add(fishGroup);
 
 const sun = new THREE.Mesh(
   new THREE.SphereGeometry(1.8, 32, 32),
@@ -390,6 +394,23 @@ const moonShadow = new THREE.Mesh(
 );
 moonShadow.position.x = -0.22;
 moon.add(moonShadow);
+
+const cloudGroup = new THREE.Group();
+for (let i = 0; i < 8; i += 1) {
+  const cloud = new THREE.Group();
+  for (let j = 0; j < 3; j += 1) {
+    const puff = new THREE.Mesh(
+      new THREE.SphereGeometry(1.1 + Math.random() * 0.5, 16, 16),
+      new THREE.MeshStandardMaterial({ color: 0xf4f8ff, transparent: true, opacity: 0.85 })
+    );
+    puff.position.x = j * 1.15;
+    puff.position.y = Math.random() * 0.25;
+    cloud.add(puff);
+  }
+  cloud.position.set((Math.random() - 0.5) * 28, 12 + Math.random() * 9, -22 + Math.random() * 12);
+  cloudGroup.add(cloud);
+}
+scene.add(cloudGroup);
 
 const starPositions = [];
 for (let i = 0; i < 1400; i += 1) {
@@ -452,6 +473,11 @@ function updateWater(time) {
       Math.cos(time * 0.6 + fish.position.z)
     );
   }
+
+  for (const cloud of cloudGroup.children) {
+    cloud.position.x += 0.006;
+    if (cloud.position.x > 20) cloud.position.x = -20;
+  }
 }
 
 function updateSkyCycle(time) {
@@ -468,7 +494,7 @@ function updateSkyCycle(time) {
 
   sunLight.intensity = daylight * 1.8 + 0.2;
   moonLight.intensity = night * 1.2;
-  hemisphereLight.intensity = 0.9 + daylight * 0.9;
+  hemiLight.intensity = 0.9 + daylight * 0.9;
   nightAmbient.intensity = night * 1.1;
 
   const skyColor = new THREE.Color().setHSL(0.58, 0.68, 0.5 + daylight * 0.2);
@@ -477,6 +503,11 @@ function updateSkyCycle(time) {
 
   stars.material.opacity = Math.max(0, night * 1.4);
   stars.visible = night > 0.12;
+
+  for (const child of cloudGroup.children) {
+    child.visible = daylight > 0.2;
+    child.material && (child.material.opacity = daylight > 0.4 ? 0.9 : 0.35);
+  }
 }
 
 function onResize() {
