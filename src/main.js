@@ -504,10 +504,15 @@ function updateSkyCycle(time) {
   stars.material.opacity = Math.max(0, night * 1.4);
   stars.visible = night > 0.12;
 
-  for (const child of cloudGroup.children) {
-    child.visible = daylight > 0.2;
-    child.material && (child.material.opacity = daylight > 0.4 ? 0.9 : 0.35);
-  }
+  cloudGroup.children.forEach((cloud) => {
+    const visibility = daylight > 0.2 ? true : false;
+    cloud.visible = visibility;
+    cloud.children.forEach((puff) => {
+      if (puff.material) {
+        puff.material.opacity = daylight > 0.4 ? 0.9 : 0.35;
+      }
+    });
+  });
 }
 
 function onResize() {
