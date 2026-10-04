@@ -18,6 +18,16 @@ html, body {
   background: radial-gradient(circle at top, #132a3f 0%, #0c1d2a 35%, #050d13 100%);
 }
 
+body {
+  perspective: 1600px;
+}
+
+#app {
+  position: fixed;
+  inset: 0;
+  transform-style: preserve-3d;
+}
+
 canvas {
   display: block;
   width: 100vw;
@@ -29,26 +39,65 @@ canvas {
   top: 20px;
   left: 20px;
   z-index: 20;
-  background: rgba(8, 18, 28, 0.32);
+  padding: 14px 18px 12px;
+  border-radius: 20px;
+  background: rgba(9, 20, 29, 0.38);
   border: 1px solid rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-radius: 18px;
-  padding: 12px 18px;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.16);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 18px 34px rgba(0, 0, 0, 0.22);
+  transform: perspective(1200px) rotateX(12deg) translateY(2px);
+}
+
+.hud::before {
+  content: '';
+  position: absolute;
+  inset: 1px;
+  border-radius: 19px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0));
+  pointer-events: none;
+}
+
+.hud__eyebrow,
+.hud h1,
+.hud__stats {
+  position: relative;
+  z-index: 1;
+}
+
+.hud__eyebrow {
+  margin: 0 0 6px;
+  font-size: 0.62rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(160, 222, 255, 0.9);
 }
 
 .hud h1 {
   margin: 0;
-  font-size: 1rem;
+  font-size: 1.08rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
 
-.hud p {
-  margin: 6px 0 0;
-  font-size: 0.72rem;
+.hud__stats {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.hud__stats span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 64px;
+  padding: 5px 9px;
+  border-radius: 999px;
+  background: rgba(125, 197, 255, 0.14);
+  border: 1px solid rgba(155, 225, 255, 0.2);
+  color: rgba(236, 246, 255, 0.9);
+  font-size: 0.6rem;
   letter-spacing: 0.08em;
-  color: rgba(236, 246, 255, 0.8);
   text-transform: uppercase;
 }
