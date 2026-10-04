@@ -7,6 +7,7 @@ NutriVision is an open-source nutrition tracking prototype. The current web app 
 - Add food entries manually with energy, protein, carbohydrates, fat and fiber.
 - Store entries in this browser's `localStorage`; no account or backend is required.
 - View totals for a selected day, remove entries, export JSON or delete local data.
+- Start each new local calendar day with an empty daily view while retaining previous entries in the date history.
 - Ask a simple rule-based assistant without any model or network connection.
 - Optionally connect to Ollama on `localhost` for local language model answers. The model receives only the question and selected-day totals, not individual journal entries.
 - Explore the optional Three.js nature scene.
