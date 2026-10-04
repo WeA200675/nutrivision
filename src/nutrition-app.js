@@ -115,10 +115,12 @@ function render() {
 }
 
 function persist(status) {
+  const previous = loadEntries();
   try {
     saveEntries(entries);
     announce(status);
   } catch {
+    entries = previous;
     announce('Speichern fehlgeschlagen. Prüfe den Speicherplatz deines Browsers; exportiere wichtige Daten regelmäßig.');
   }
   render();
@@ -165,8 +167,11 @@ $('#nv-export').addEventListener('click', () => {
   const link = document.createElement('a');
   link.href = URL.createObjectURL(blob);
   link.download = `nutrivision-export-${localDateString()}.json`;
+  document.body.append(link);
   link.click();
-  URL.revokeObjectURL(link.href);
+  const objectUrl = link.href;
+  link.remove();
+  window.setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
   announce('JSON-Export erstellt. Bewahre die Datei sicher auf.');
 });
 
