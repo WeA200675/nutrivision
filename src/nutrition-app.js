@@ -97,6 +97,8 @@ function render() {
   for (const { entry, index } of visible) {
     const item = document.createElement('li');
     item.className = 'nv-entry';
+    item.dataset.entryId = String(entry.createdAt ?? index);
+    item.tabIndex = -1;
     const detail = document.createElement('div');
     const name = document.createElement('strong');
     const nutrients = document.createElement('small');
@@ -122,6 +124,7 @@ function persist(status) {
   try {
     saveEntries(entries);
     announce(status);
+    window.dispatchEvent(new CustomEvent('nutrivision:entries-updated', { detail: { entries } }));
   } catch {
     entries = previous;
     announce('Speichern fehlgeschlagen. Prüfe den Speicherplatz deines Browsers; exportiere wichtige Daten regelmäßig.');
@@ -144,6 +147,7 @@ $('.nv-close').addEventListener('click', () => {
 dateInput.addEventListener('change', () => {
   followingToday = dateInput.value === localDateString();
   render();
+  window.dispatchEvent(new CustomEvent('nutrivision:date-selected', { detail: { date: dateInput.value } }));
 });
 
 function syncToday() {
@@ -154,6 +158,7 @@ function syncToday() {
   $('#nv-entry-form').reset();
   for (const field of ['kcal', 'protein', 'carbs', 'fat', 'fiber']) $('#nv-entry-form').elements[field].value = '0';
   render();
+  window.dispatchEvent(new CustomEvent('nutrivision:date-selected', { detail: { date: today } }));
   announce('Neuer lokaler Tag: Die Tagesansicht wurde zurückgesetzt. Einträge des Vortags bleiben im Verlauf erhalten.');
 }
 
@@ -169,6 +174,7 @@ $('#nv-today').addEventListener('click', () => {
   followingToday = true;
   syncToday();
   render();
+  window.dispatchEvent(new CustomEvent('nutrivision:date-selected', { detail: { date: dateInput.value } }));
 });
 window.addEventListener('focus', syncToday);
 window.addEventListener('pageshow', syncToday);
@@ -188,9 +194,36 @@ $('#nv-entry-form').addEventListener('submit', (event) => {
     });
     entries.push(entry);
     persist('Eintrag wurde nur lokal auf diesem Gerät gespeichert.');
+    window.dispatchEvent(new CustomEvent('nutrivision:show-entry', { detail: { entry } }));
     event.currentTarget.reset();
     for (const field of ['kcal', 'protein', 'carbs', 'fat', 'fiber']) event.currentTarget.elements[field].value = '0';
   } catch (error) { announce(error.message); }
+});
+
+window.addEventListener('nutrivision:select-date', (event) => {
+  const nextDate = event.detail?.date;
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(nextDate ?? '')) return;
+  dateInput.value = nextDate;
+  followingToday = nextDate === localDateString();
+  render();
+});
+
+window.addEventListener('nutrivision:show-entry', (event) => {
+  const entry = event.detail?.entry;
+  if (!entry) return;
+  dateInput.value = entry.date;
+  followingToday = entry.date === localDateString();
+  render();
+  if (panel.hidden) {
+    panel.hidden = false;
+    launcher.hidden = true;
+    launcher.setAttribute('aria-expanded', 'true');
+  }
+  window.requestAnimationFrame(() => {
+    const target = [...entriesList.children].find((item) => item.dataset.entryId === String(entry.createdAt));
+    target?.scrollIntoView({ block: 'center' });
+    target?.focus();
+  });
 });
 
 $('#nv-delete-all').addEventListener('click', () => {
