@@ -1,0 +1,42 @@
+#world-ui-root { color: #eff8f3; font-family: Inter, ui-sans-serif, system-ui, sans-serif; }
+.world-panel { position: fixed; z-index: 18; left: 16px; bottom: 16px; width: min(410px, calc(100vw - 32px)); max-height: min(58vh, 620px); overflow: auto; padding: 16px; border: 1px solid rgba(225,255,239,.2); border-radius: 20px; background: rgba(7,20,21,.84); box-shadow: 0 18px 54px rgba(0,0,0,.34); backdrop-filter: blur(16px); pointer-events: auto; }
+.world-header { display:flex; justify-content:space-between; align-items:flex-start; gap:12px; }
+.world-kicker { margin:0 0 4px; color:#a6e7c4; font-size:.65rem; letter-spacing:.12em; text-transform:uppercase; }
+.world-header h2 { margin:0; font-size:1rem; }
+.world-panel button, .world-panel input { font:inherit; }
+.world-panel button { border:1px solid rgba(208,239,223,.3); border-radius:9px; padding:7px 9px; color:#f2fbf6; background:rgba(232,255,242,.08); cursor:pointer; }
+.world-panel button:hover { background:rgba(154,226,187,.18); }
+.world-panel button:focus-visible, .world-panel input:focus-visible { outline:3px solid #b3f4d1; outline-offset:2px; }
+.world-collapse { font-size:.72rem !important; }
+.world-date-row { display:flex; align-items:center; gap:8px; margin-top:12px; color:#d3e5dc; font-size:.8rem; }
+.world-date-row input { min-width:0; border:1px solid rgba(208,239,223,.27); border-radius:8px; padding:7px; color:#fff; background:#102523; }
+.world-date-row button { font-size:.75rem; }
+.world-metrics { display:grid; grid-template-columns:repeat(3,1fr); gap:7px; margin-top:12px; }
+.world-metrics div { display:grid; gap:4px; border:1px solid rgba(208,239,223,.12); border-radius:10px; padding:8px; background:rgba(226,255,238,.05); }
+.world-metrics span { color:#b5c9be; font-size:.68rem; }
+.world-metrics strong { font-size:.9rem; }
+.world-caption, .world-help, .world-status { color:#b9ccc2; font-size:.72rem; line-height:1.45; }
+.world-macro { display:grid; gap:5px; margin:10px 0; }
+.world-macro-row { display:grid; grid-template-columns:142px 1fr; align-items:center; gap:8px; color:#d9e9e0; font-size:.68rem; }
+.world-macro-track { height:7px; overflow:hidden; border-radius:99px; background:rgba(239,255,246,.12); }
+.world-macro-fill { display:block; height:100%; border-radius:inherit; }
+.world-controls { display:flex; flex-wrap:wrap; gap:6px; margin:10px 0; }
+.world-controls button { font-size:.7rem; }
+.world-help { border-left:2px solid #a6e7c4; padding-left:8px; }
+.world-food-section h3 { margin:12px 0 6px; font-size:.78rem; }
+.world-food-list { display:grid; gap:4px; max-height:118px; overflow:auto; margin:0; padding:0; list-style:none; }
+.world-food-list li { min-width:0; }
+.world-food-button { display:flex; width:100%; align-items:center; gap:8px; text-align:left; font-size:.72rem !important; }
+.world-food-button span:last-child { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.world-food-dot { flex:0 0 10px; width:10px; height:10px; border-radius:50%; }
+.world-selection { margin-top:8px; border-left:2px solid #9ae2bb; padding:7px 9px; color:#e5f7ec; background:rgba(154,226,187,.07); font-size:.7rem; line-height:1.4; }
+.world-status { min-height:1em; margin:8px 0 0; }
+#world-content[hidden], #world-help[hidden] { display:none; }
+@media (max-width:650px) {
+  .world-panel { left:8px; bottom:8px; width:min(390px, calc(100vw - 16px)); max-height:36vh; padding:12px; }
+  .world-metrics { gap:5px; }
+  .world-metrics div { padding:6px; }
+  .world-metrics strong { font-size:.8rem; }
+  .world-macro-row { grid-template-columns:120px 1fr; }
+}
+@media (prefers-reduced-motion: reduce) { .world-panel { scroll-behavior:auto; } }
