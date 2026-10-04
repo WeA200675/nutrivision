@@ -26,9 +26,9 @@ const renderer = new THREE.WebGLRenderer({
   alpha: false,
   powerPreference: 'high-performance',
 });
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, window.innerWidth < 700 ? 1.2 : 1.6));
 renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.shadowMap.enabled = true;
+renderer.shadowMap.enabled = window.innerWidth > 700;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.shadowMap.autoUpdate = true;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -56,8 +56,8 @@ scene.add(hemiLight);
 const sunLight = new THREE.DirectionalLight(0xfff0bc, 1.6);
 sunLight.position.set(18, 24, 12);
 sunLight.castShadow = true;
-sunLight.shadow.mapSize.width = 2048;
-sunLight.shadow.mapSize.height = 2048;
+sunLight.shadow.mapSize.width = 1024;
+sunLight.shadow.mapSize.height = 1024;
 sunLight.shadow.camera.left = -35;
 sunLight.shadow.camera.right = 35;
 sunLight.shadow.camera.top = 35;
@@ -128,7 +128,7 @@ lakeGlow.rotation.x = -Math.PI / 2;
 lakeGlow.position.y = 0.46;
 world.add(lakeGlow);
 
-const waterGeometry = new THREE.PlaneGeometry(19, 19, 180, 180);
+const waterGeometry = new THREE.PlaneGeometry(19, 19, 72, 72);
 const water = new THREE.Mesh(
   waterGeometry,
   new THREE.MeshPhysicalMaterial({
@@ -310,25 +310,26 @@ for (let i = 0; i < 28; i += 1) {
   createRock(x, z, 0.8 + Math.random() * 1.4);
 }
 
-const grassGroup = new THREE.Group();
-for (let i = 0; i < 900; i += 1) {
-  const blade = new THREE.Mesh(
-    new THREE.BoxGeometry(0.04, 0.45 + Math.random() * 0.8, 0.02),
-    new THREE.MeshStandardMaterial({
-      color: new THREE.Color().setHSL(0.32 + Math.random() * 0.04, 0.7, 0.33 + Math.random() * 0.18),
-    })
-  );
-
+const grassGeometry = new THREE.BoxGeometry(0.04, 1, 0.02);
+const grassMaterial = new THREE.MeshStandardMaterial({ color: 0x579759, roughness: 1 });
+const grassCount = 900;
+const grassGroup = new THREE.InstancedMesh(grassGeometry, grassMaterial, grassCount);
+const grassDummy = new THREE.Object3D();
+for (let i = 0; i < grassCount; i += 1) {
   const x = (Math.random() - 0.5) * 30;
   const z = (Math.random() - 0.5) * 30;
-  if (Math.hypot(x, z) < 8.5) continue;
-
-  blade.position.set(x, 0.25 + Math.random() * 0.35, z);
-  blade.rotation.z = (Math.random() - 0.5) * 0.8;
-  blade.rotation.y = Math.random() * Math.PI;
-  blade.castShadow = true;
-  grassGroup.add(blade);
+  if (Math.hypot(x, z) < 8.5) { grassDummy.position.set(0, -100, 0); grassDummy.scale.setScalar(0); }
+  else {
+    grassDummy.position.set(x, 0.5, z);
+    grassDummy.scale.set(1, 0.45 + Math.random() * 0.8, 1);
+    grassGroup.setColorAt(i, new THREE.Color().setHSL(0.32 + Math.random() * 0.04, 0.7, 0.33 + Math.random() * 0.18));
+  }
+  grassDummy.rotation.set(0, Math.random() * Math.PI, (Math.random() - 0.5) * 0.8);
+  grassDummy.updateMatrix();
+  grassGroup.setMatrixAt(i, grassDummy.matrix);
 }
+grassGroup.instanceMatrix.needsUpdate = true;
+grassGroup.castShadow = window.innerWidth > 700;
 world.add(grassGroup);
 
 const fireflies = [];
@@ -452,7 +453,7 @@ for (const points of constellations) {
   scene.add(line);
 }
 
-const clock = new THREE.Clock();
+const clock = new THREE.Clock();\nconst worldTickCallbacks = [];\nlet worldPaused = window.matchMedia('(prefers-reduced-motion: reduce)').matches;\nlet focusTarget = null;\nconst defaultCameraPosition = camera.position.clone();
 
 const scannerGroup = new THREE.Group();
 const scannerBase = new THREE.Mesh(
@@ -689,18 +690,43 @@ window.addEventListener('resize', onResize, { passive: true });
 
 renderer.setAnimationLoop(() => {
   const elapsed = clock.getElapsedTime();
-  updateSkyCycle(elapsed);
-  updateWater(elapsed);
-
-  controls.target.x += (pointer.x * 1.1 - controls.target.x) * 0.025;
-  controls.target.z += (pointer.y * 1.1 - controls.target.z) * 0.025;
-  controls.target.y = 2.8 + Math.sin(elapsed * 0.8) * 0.18;
-
+  if (!worldPaused) {
+    updateSkyCycle(elapsed);
+    updateWater(elapsed);
+    if (focusTarget) {
+      controls.target.lerp(focusTarget, 0.07);
+    } else {
+      controls.target.x += (pointer.x * 1.1 - controls.target.x) * 0.025;
+      controls.target.z += (pointer.y * 1.1 - controls.target.z) * 0.025;
+      controls.target.y = 2.8 + Math.sin(elapsed * 0.8) * 0.18;
+    }
+    for (const callback of worldTickCallbacks) callback(elapsed);
+  }
   controls.update();
   renderer.render(scene, camera);
 });
 
-window.__nutrivisionScene = { scene, camera, renderer, controls };
+function resetWorldCamera() {
+  focusTarget = null;
+  camera.position.copy(defaultCameraPosition);
+  controls.target.set(0, 2.8, 0);
+  controls.update();
+}
+const sceneApi = {
+  scene, camera, renderer, controls, world, THREE,
+  isPaused: () => worldPaused,
+  setPaused: (paused) => { worldPaused = Boolean(paused); },
+  onTick: (callback) => { if (typeof callback === 'function') worldTickCallbacks.push(callback); },
+  resetCamera: resetWorldCamera,
+  focusObject: (object) => {
+    const position = new THREE.Vector3();
+    object.getWorldPosition(position);
+    position.y = 1.4;
+    focusTarget = position;
+  },
+};
+window.__nutrivisionScene = sceneApi;
+window.dispatchEvent(new CustomEvent('nutrivision:scene-ready', { detail: sceneApi }));
 
 
 
