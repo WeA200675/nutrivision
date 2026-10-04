@@ -21,11 +21,23 @@ scene.fog = new THREE.Fog(0x8fc9f6, 24, 90);
 const camera = new THREE.PerspectiveCamera(48, window.innerWidth / window.innerHeight, 0.1, 420);
 camera.position.set(22, 13, 24);
 
-const renderer = new THREE.WebGLRenderer({
-  antialias: true,
-  alpha: false,
-  powerPreference: 'high-performance',
-});
+let renderer;
+try {
+  renderer = new THREE.WebGLRenderer({
+    antialias: window.innerWidth > 700,
+    alpha: false,
+    powerPreference: 'default',
+  });
+} catch (error) {
+  window.__nutrivisionSceneError = true;
+  const fallback = document.createElement('p');
+  fallback.className = 'scene-fallback';
+  fallback.setAttribute('role', 'status');
+  fallback.textContent = 'Die 3D-Ansicht benötigt WebGL. Das Ernährungstagebuch bleibt weiterhin verfügbar.';
+  app.appendChild(fallback);
+  window.dispatchEvent(new CustomEvent('nutrivision:scene-error'));
+  throw error;
+}
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, window.innerWidth < 700 ? 1.2 : 1.6));
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.shadowMap.enabled = window.innerWidth > 700;
