@@ -3,11 +3,13 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Nutrivision 3D World</title>
-    <meta name="description" content="Realistischer 3D-Wald-See mit Haus, Wellen, Sonne, Mond, Sternen und Kamera-Controls." />
+    <title>Nutrivision – Ernährungstagebuch mit lokaler KI</title>
+    <meta name="description" content="Privates, lokal gespeichertes Ernährungstagebuch mit optionalem lokalem KI-Assistenten." />
+    <meta name="theme-color" content="#09191b" />
   </head>
   <body>
     <div id="app"></div>
+    <div id="nutrition-app-root"></div>
     <div class="hud">
       <div class="hud__eyebrow">Nutrivision</div>
       <h1>3D Food World</h1>
@@ -18,5 +20,6 @@
       </div>
     </div>
     <script type="module" src="/src/main.js"></script>
+    <script type="module" src="/src/nutrition-app.js"></script>
   </body>
 </html>
