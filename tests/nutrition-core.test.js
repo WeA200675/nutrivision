@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { localAnswer, localDateString, loadEntries, saveEntries, totalsForDate, validateEntry, validateLocalEndpoint, STORAGE_KEY } from '../src/nutrition-core.js';
+import { entriesForDate, localAnswer, localDateString, loadEntries, millisecondsUntilNextLocalDay, saveEntries, totalsForDate, validateEntry, validateLocalEndpoint, STORAGE_KEY } from '../src/nutrition-core.js';
 
 test('validates entries, trims names and rounds nutrient values', () => {
   const entry = validateEntry({ name: '  Haferflocken ', date: '2026-10-04', kcal: '120.24', protein: 4, carbs: 20, fat: 2, fiber: 3.5 });
@@ -23,6 +23,15 @@ test('calculates totals only for the selected local date', () => {
   assert.deepEqual(totalsForDate(entries, '2026-10-04'), { kcal: 150, protein: 3.5, carbs: 15, fat: 1.5, fiber: 4 });
 });
 
+test('starts the new day with no visible entries while preserving the previous day', () => {
+  const entries = [
+    { name: 'Breakfast', date: '2026-10-04', kcal: 350, protein: 12, carbs: 45, fat: 10, fiber: 8 },
+  ];
+  assert.deepEqual(entriesForDate(entries, '2026-10-05'), []);
+  assert.equal(totalsForDate(entries, '2026-10-05').kcal, 0);
+  assert.equal(entriesForDate(entries, '2026-10-04').length, 1);
+});
+
 test('loads malformed storage safely and persists valid entries', () => {
   const values = new Map([[STORAGE_KEY, '{broken']]);
   const storage = { getItem: (key) => values.get(key), setItem: (key, value) => values.set(key, value) };
@@ -40,4 +49,12 @@ test('answers locally and refuses non-loopback model endpoints', () => {
 
 test('formats dates using local calendar fields', () => {
   assert.equal(localDateString(new Date(2026, 9, 4, 23, 30)), '2026-10-04');
+});
+
+test('schedules rollover at the next local midnight, including month boundaries', () => {
+  const beforeMidnight = new Date(2026, 9, 31, 23, 59, 0, 0);
+  const delay = millisecondsUntilNextLocalDay(beforeMidnight);
+  const nextDay = new Date(beforeMidnight.getTime() + delay);
+  assert.equal(localDateString(nextDay), '2026-11-01');
+  assert.ok(delay > 0 && delay <= 61000);
 });
