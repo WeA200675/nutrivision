@@ -517,97 +517,6 @@ for (let i = 0; i < nutrientColors.length; i += 1) {
 scannerGroup.position.set(0, 0, 0);
 world.add(scannerGroup);
 
-function createApple() {
-  const group = new THREE.Group();
-  const body = new THREE.Mesh(
-    new THREE.SphereGeometry(0.55, 24, 24),
-    new THREE.MeshStandardMaterial({ color: 0xef5b4f, roughness: 0.78 })
-  );
-  body.scale.set(1.05, 1.18, 0.98);
-  body.castShadow = true;
-  group.add(body);
-
-  const stem = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.05, 0.08, 0.25, 10),
-    new THREE.MeshStandardMaterial({ color: 0x714c2b, roughness: 1 })
-  );
-  stem.position.y = 0.7;
-  group.add(stem);
-
-  const leaf = new THREE.Mesh(
-    new THREE.SphereGeometry(0.18, 12, 12),
-    new THREE.MeshStandardMaterial({ color: 0x4ca35d, roughness: 0.9 })
-  );
-  leaf.scale.set(1.6, 0.7, 1.1);
-  leaf.position.set(0.2, 0.92, 0.1);
-  group.add(leaf);
-  return group;
-}
-
-function createBottle() {
-  const group = new THREE.Group();
-  const body = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.28, 0.34, 0.9, 18),
-    new THREE.MeshPhysicalMaterial({ color: 0x9fe7ff, transparent: true, opacity: 0.85, roughness: 0.18, transmission: 0.45 })
-  );
-  body.castShadow = true;
-  group.add(body);
-
-  const cap = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.12, 0.14, 0.2, 12),
-    new THREE.MeshStandardMaterial({ color: 0xcfd8ea, roughness: 0.8 })
-  );
-  cap.position.y = 0.58;
-  group.add(cap);
-
-  const label = new THREE.Mesh(
-    new THREE.BoxGeometry(0.3, 0.28, 0.04),
-    new THREE.MeshStandardMaterial({ color: 0x72c7d6, emissive: 0x71a5be, emissiveIntensity: 0.38 })
-  );
-  label.position.y = 0.02;
-  group.add(label);
-  return group;
-}
-
-function createBowl() {
-  const group = new THREE.Group();
-  const bowl = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.5, 0.6, 0.25, 28),
-    new THREE.MeshStandardMaterial({ color: 0xe9d7b8, roughness: 0.9 })
-  );
-  bowl.position.y = 0.12;
-  bowl.castShadow = true;
-  group.add(bowl);
-
-  const rim = new THREE.Mesh(
-    new THREE.TorusGeometry(0.45, 0.05, 12, 30),
-    new THREE.MeshStandardMaterial({ color: 0xf2ead4, roughness: 0.8 })
-  );
-  rim.rotation.x = Math.PI / 2;
-  rim.position.y = 0.24;
-  group.add(rim);
-
-  const salad = new THREE.Mesh(
-    new THREE.SphereGeometry(0.28, 18, 18),
-    new THREE.MeshStandardMaterial({ color: 0xa8d976, roughness: 0.85 })
-  );
-  salad.scale.set(1.5, 0.8, 1.1);
-  salad.position.y = 0.28;
-  group.add(salad);
-  return group;
-}
-
-const nutritionalObjects = [
-  { x: -5.6, z: 4.2, mesh: createApple() },
-  { x: 0, z: -5.8, mesh: createBottle() },
-  { x: 5.5, z: 4.5, mesh: createBowl() },
-];
-for (const item of nutritionalObjects) {
-  item.mesh.position.set(item.x, 0.8, item.z);
-  item.mesh.rotation.y = Math.random() * Math.PI;
-  world.add(item.mesh);
-}
-
 function updateWater(time) {
   const position = water.geometry.attributes.position;
   for (let i = 0; i < position.count; i += 1) {
@@ -651,10 +560,6 @@ function updateWater(time) {
     orb.rotation.y += 0.025;
   });
 
-  nutritionalObjects.forEach(({ mesh }, index) => {
-    mesh.rotation.y += 0.012 + index * 0.002;
-    mesh.position.y = 0.8 + Math.sin(time * 1.5 + index) * 0.08;
-  });
 }
 
 function updateSkyCycle(time) {
