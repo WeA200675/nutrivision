@@ -7,6 +7,15 @@ export function localDateString(date = new Date()) {
   return `${year}-${month}-${day}`;
 }
 
+export function entriesForDate(entries, date) {
+  return entries.filter((entry) => entry?.date === date);
+}
+
+export function millisecondsUntilNextLocalDay(date = new Date()) {
+  const nextDay = new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1, 0, 0, 0, 50);
+  return Math.max(1, nextDay.getTime() - date.getTime());
+}
+
 export function validateEntry(input) {
   const name = String(input.name ?? '').trim();
   if (!name || name.length > 100) throw new Error('Bitte einen Namen mit höchstens 100 Zeichen eingeben.');
