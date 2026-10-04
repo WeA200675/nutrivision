@@ -11,6 +11,8 @@ NutriVision is an open-source nutrition tracking prototype. The current web app 
 - Ask a simple rule-based assistant without any model or network connection.
 - Optionally connect to Ollama on `localhost` for local language model answers. The model receives only the question and selected-day totals, not individual journal entries.
 - Explore the optional Three.js nature scene.
+- See the selected day's entries as labelled, clickable 3D objects; the accessible HTML list provides the same details without pointer-based 3D interaction.
+- Use local-date selection, camera reset, animation pause, reduced-motion defaults, and mobile-oriented rendering fallbacks.
 
 Nutrition values are user-entered and may be incomplete. This project does not provide diagnosis or treatment advice.
 
