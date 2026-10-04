@@ -1,5 +1,5 @@
 import './nutrition-app.css';
-import { loadEntries, localAnswer, localDateString, saveEntries, totalsForDate, validateEntry, validateLocalEndpoint } from './nutrition-core.js';
+import { entriesForDate, loadEntries, localAnswer, localDateString, millisecondsUntilNextLocalDay, saveEntries, totalsForDate, validateEntry, validateLocalEndpoint } from './nutrition-core.js';
 
 const root = document.querySelector('#nutrition-app-root');
 if (!root) throw new Error('Nutrition app root is missing.');
@@ -11,7 +11,7 @@ root.innerHTML = `
       <div><p class="nv-kicker">Privat auf diesem Gerät</p><h2 id="nv-title">Dein Ernährungstagebuch</h2></div>
       <button class="nv-close" type="button" aria-label="Tagebuch schließen">×</button>
     </header>
-    <label class="nv-field nv-date">Tag<input id="nv-date" type="date" required></label>
+    <div class="nv-date-row"><label class="nv-field nv-date">Tag<input id="nv-date" type="date" required></label><button id="nv-today" class="nv-today" type="button">Heute</button></div>
     <section aria-labelledby="nv-totals-title">
       <h3 id="nv-totals-title">Erfasste Summe</h3>
       <p class="nv-note">Nur aus deinen manuellen Einträgen. Kein Zielwert und keine Bedarfsbewertung.</p>
@@ -63,6 +63,8 @@ const entriesList = $('#nv-entries');
 const totalsList = $('#nv-totals');
 const message = $('#nv-message');
 let entries = loadEntries();
+let followingToday = true;
+let rolloverTimer;
 
 dateInput.value = localDateString();
 
@@ -84,7 +86,8 @@ function render() {
   }
 
   entriesList.replaceChildren();
-  const visible = entries.map((entry, index) => ({ entry, index })).filter(({ entry }) => entry.date === selectedDate);
+  const visibleEntries = entriesForDate(entries, selectedDate);
+  const visible = visibleEntries.map((entry) => ({ entry, index: entries.indexOf(entry) }));
   if (!visible.length) {
     const empty = document.createElement('li');
     empty.className = 'nv-empty';
@@ -138,7 +141,41 @@ $('.nv-close').addEventListener('click', () => {
   launcher.setAttribute('aria-expanded', 'false');
   launcher.focus();
 });
-dateInput.addEventListener('change', render);
+dateInput.addEventListener('change', () => {
+  followingToday = dateInput.value === localDateString();
+  render();
+});
+
+function syncToday() {
+  if (!followingToday) return;
+  const today = localDateString();
+  if (dateInput.value === today) return;
+  dateInput.value = today;
+  $('#nv-entry-form').reset();
+  for (const field of ['kcal', 'protein', 'carbs', 'fat', 'fiber']) $('#nv-entry-form').elements[field].value = '0';
+  render();
+  announce('Neuer lokaler Tag: Die Tagesansicht wurde zurückgesetzt. Einträge des Vortags bleiben im Verlauf erhalten.');
+}
+
+function scheduleLocalDayRollover() {
+  window.clearTimeout(rolloverTimer);
+  rolloverTimer = window.setTimeout(() => {
+    syncToday();
+    scheduleLocalDayRollover();
+  }, millisecondsUntilNextLocalDay());
+}
+
+$('#nv-today').addEventListener('click', () => {
+  followingToday = true;
+  syncToday();
+  render();
+});
+window.addEventListener('focus', syncToday);
+window.addEventListener('pageshow', syncToday);
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible') syncToday();
+});
+scheduleLocalDayRollover();
 
 $('#nv-entry-form').addEventListener('submit', (event) => {
   event.preventDefault();
